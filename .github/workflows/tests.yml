@@ -1,0 +1,32 @@
+name: Tests
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      # Neither suite needs installing: the pipeline is stdlib-only and the JS
+      # has no dependencies, so the runner's own Node is enough.
+      - name: Python suites (data contract and pipeline)
+        run: python -m unittest discover -s tests -v
+
+      - name: JavaScript unit tests
+        run: node tests/web/unit.mjs
+
+      - name: Browser smoke test
+        run: node tests/web/smoke.mjs

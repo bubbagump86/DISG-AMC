@@ -1,0 +1,87 @@
+name: Daily refresh
+
+# Pulls the latest news, merges it into data.json, regenerates stats.json, and
+# commits only when something actually changed. The pipeline is idempotent and
+# change detection ignores the stats heartbeat, so a quiet news day produces no
+# commit at all rather than a daily no-op commit.
+
+on:
+  schedule:
+    # 06:17 UTC -- deliberately off the hour, when the Actions queue is busiest.
+    - cron: '17 6 * * *'
+  workflow_dispatch:
+    inputs:
+      apply_funding:
+        description: 'Also auto-apply high-confidence funding numbers (off by default)'
+        type: boolean
+        default: false
+      only:
+        description: 'Restrict the refresh to one company (name or _id)'
+        type: string
+        required: false
+
+permissions:
+  contents: write
+
+# Never let two refreshes race for the same commit.
+concurrency:
+  group: refresh
+  cancel-in-progress: false
+
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      # The pipeline is stdlib-only, so there is nothing to install.
+      - name: Refresh data.json and stats.json
+        env:
+          APPLY_FUNDING: ${{ inputs.apply_funding }}
+          ONLY_COMPANY: ${{ inputs.only }}
+        run: |
+          args=()
+          if [ "$APPLY_FUNDING" = "true" ]; then
+            args+=(--apply-funding)
+          fi
+          if [ -n "$ONLY_COMPANY" ]; then
+            args+=(--only "$ONLY_COMPANY")
+          fi
+          python -m pipeline.refresh --verbose "${args[@]}"
+
+      # Validates what is about to be published, not what was published before:
+      # if a refresh produces data the page cannot render, this fails and the
+      # commit below never runs.
+      - name: Validate the regenerated data and the page
+        run: |
+          python -m unittest discover -s tests -v
+          node tests/web/unit.mjs
+          node tests/web/smoke.mjs
+
+      # The review queue is gitignored; the artifact is how a human sees it.
+      - name: Upload the funding review queue
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: funding-queue
+          path: pipeline/review/funding_queue.json
+          if-no-files-found: ignore
+          retention-days: 14
+
+      - name: Commit if the data changed
+        run: |
+          if git diff --quiet -- data.json stats.json; then
+            echo "No data change; nothing to commit."
+            exit 0
+          fi
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add data.json stats.json
+          git commit -m "Daily refresh $(date -u +%Y-%m-%d)"
+          git push

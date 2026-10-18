@@ -1,0 +1,11 @@
+{
+  "name": "ai-intel-dashboard",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Static dashboard (index.html + data.json). This manifest exists only so Node can run the browser smoke test as ES modules. There are no dependencies: the site has no build step and the pipeline is stdlib Python.",
+  "scripts": {
+    "test:web": "node tests/web/smoke.mjs",
+    "test": "node tests/web/smoke.mjs"
+  }
+}

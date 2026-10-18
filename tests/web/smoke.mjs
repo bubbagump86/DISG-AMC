@@ -176,6 +176,35 @@ async function run() {
   check('no inline event handlers in index.html', inlineHandlers.length === 0,
     inlineHandlers.join(', '));
 
+  // ---- accessibility --------------------------------------------------------
+  // A marker must be either properly labelled or explicitly hidden as
+  // decorative (cluster "peek" dots duplicate the cluster head).
+  const markerTags = rendered.map.match(/<circle class="map-dot[^>]*>/g) || [];
+  const covered = markerTags.filter(
+    (tag) => /aria-label="/.test(tag) || /aria-hidden="true"/.test(tag),
+  ).length;
+  check('every map marker is labelled or marked decorative',
+    markerTags.length > 0 && covered === markerTags.length,
+    `${covered} of ${markerTags.length} markers covered`);
+
+  const labelledMarkers = markerTags.filter((tag) => /aria-label="/.test(tag)).length;
+  check('map markers have accessible names', labelledMarkers > 0, 'no labelled markers');
+
+  const pressed = (rendered.categories.match(/aria-pressed="(true|false)"/g) || []).length;
+  const categoryButtons = (rendered.categories.match(/class="filter-btn/g) || []).length;
+  check('category filters expose aria-pressed',
+    categoryButtons > 0 && pressed === categoryButtons,
+    `${pressed} of ${categoryButtons} buttons`);
+
+  check('the modal is a labelled dialog', /role="dialog"/.test(html) && /aria-modal="true"/.test(html));
+  check('the search input has an accessible name', /id="company-search"[^>]*aria-label="/.test(html));
+  check('a skip link is present', /class="skip-link"/.test(html));
+  check('the main landmark is identified', /<main[^>]*id="main"/.test(html));
+
+  const focusableNav = (rendered.sidebar.match(/role="button" tabindex="0"/g) || []).length;
+  check('sidebar links are focusable', focusableNav === expected,
+    `expected ${expected} focusable links, found ${focusableNav}`);
+
   // ---- nothing was swallowed ------------------------------------------------
   check('no console errors', dom.errors.length === 0, dom.errors.slice(0, 3).join(' | '));
 

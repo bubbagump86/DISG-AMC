@@ -142,8 +142,14 @@ class Element {
   getElementsByTagName() {
     return [];
   }
-  focus() {}
-  blur() {}
+  focus() {
+    // Tracked so the app's focus-restore logic (modal open/close) is observable
+    // and does not simply throw on a missing activeElement.
+    Element.activeElement = this;
+  }
+  blur() {
+    if (Element.activeElement === this) Element.activeElement = null;
+  }
   click() {
     this.dispatch('click');
   }
@@ -194,6 +200,11 @@ class Document {
       this._byId.set(id, new Element('div', id));
     }
     return this._byId.get(id);
+  }
+
+  /** Last element focused, or the body when nothing has been focused. */
+  get activeElement() {
+    return Element.activeElement || this.body;
   }
 
   createElement(tag) {

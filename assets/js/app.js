@@ -5,7 +5,7 @@
  */
 import { state } from './state.js';
 import { loadData, loadStats } from './data.js';
-import { renderSidebarCompanies, renderStats, setupScrollSpy, toggleSidebar } from './ui.js';
+import { renderSidebarCompanies, renderStats, scrollToAnchor, setupScrollSpy, toggleSidebar } from './ui.js';
 import { applyFilters, renderCategoryButtons, renderTable } from './table.js';
 import { renderArrChart, renderDonut, renderFundingChart, renderValuationChart } from './charts.js';
 import { renderMap } from './map.js';
@@ -55,6 +55,46 @@ import { closeModal, renderDetailSections } from './detail.js';
       });
     }
     if (backdrop) backdrop.addEventListener('click', toggleSidebar);
+
+    // One delegated listener for every sidebar link, static or generated, with
+    // keyboard activation. This replaced 40+ per-item listeners that were
+    // re-attached on every re-render and were mouse-only.
+    const sidebar = document.getElementById('sidebar');
+    if (!sidebar) return;
+    const activate = target => {
+      const item = target && target.closest ? target.closest('.nav-item') : null;
+      if (item && item.dataset.anchor) scrollToAnchor(item.dataset.anchor);
+    };
+    sidebar.addEventListener('click', e => activate(e.target));
+    sidebar.addEventListener('keydown', e => {
+      if (e.key !== 'Enter' && e.key !== ' ') return;
+      const item = e.target && e.target.closest ? e.target.closest('.nav-item') : null;
+      if (item) {
+        e.preventDefault();
+        activate(e.target);
+      }
+    });
+  }
+
+  // ============ Modal focus trap ============
+  // Keeps Tab inside the dialog while it is open, so focus cannot wander into
+  // the page behind it.
+  function trapFocus(event) {
+    const overlay = document.getElementById('modal');
+    if (!overlay.classList.contains('open')) return;
+    const focusable = overlay.querySelectorAll(
+      'a[href], button:not([disabled]), input:not([disabled]), [tabindex]:not([tabindex="-1"])'
+    );
+    if (!focusable.length) return;
+    const first = focusable[0];
+    const last = focusable[focusable.length - 1];
+    if (event.shiftKey && document.activeElement === first) {
+      event.preventDefault();
+      last.focus();
+    } else if (!event.shiftKey && document.activeElement === last) {
+      event.preventDefault();
+      first.focus();
+    }
   }
 
   function init() {
@@ -92,6 +132,7 @@ import { closeModal, renderDetailSections } from './detail.js';
     });
     document.addEventListener('keydown', e => {
       if (e.key === 'Escape') closeModal();
+      else if (e.key === 'Tab') trapFocus(e);
     });
   }
 

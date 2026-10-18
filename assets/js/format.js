@@ -1,14 +1,43 @@
 /**
- * Pure formatting and escaping helpers.
+ * Pure formatting and display helpers.
  *
  * Extracted from the original single-file index.html (Phase 2).
  */
 
-export const escapeHtml = s => String(s || '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+// `s == null ? '' : String(s)` rather than `String(s || '')`: the latter also
+// swallows legitimate falsy values such as the number 0.
+const asText = s => (s === null || s === undefined ? '' : String(s));
 
-export const escapeAttr = s => String(s || '').replace(/[^A-Za-z0-9_\- .\/]/g, '');
+export const escapeHtml = s => asText(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 
-  // ============ State ============
+export const escapeAttr = s => asText(s).replace(/[^A-Za-z0-9_\- .\/]/g, '');
+
+const normalizeText = value => String(value || '').toLowerCase().replace(/[^a-z0-9]+/g, ' ').trim();
+
+/**
+ * The summary to show for a news item, or '' when it adds nothing.
+ *
+ * Google News supplies only the headline plus the publisher as its description,
+ * and the upstream data often duplicated the headline outright, so rendering
+ * both printed every story twice. Anything that merely restates the headline is
+ * suppressed; a real summary from a publisher's own feed is kept.
+ */
+export function displaySummary(headline, summary) {
+  const text = String(summary || '').trim();
+  if (!text) return '';
+  const normalizedSummary = normalizeText(text);
+  const normalizedHeadline = normalizeText(headline);
+  if (!normalizedSummary) return '';
+  if (normalizedSummary === normalizedHeadline) return '';
+  if (normalizedHeadline && normalizedSummary.startsWith(normalizedHeadline)) return '';
+  return text;
+}
+
+/** Escaped `.timeline-summary` block, or '' when the summary is redundant. */
+export function summaryHtml(headline, summary) {
+  const text = displaySummary(headline, summary);
+  return text ? `<div class="timeline-summary">${escapeHtml(text)}</div>` : '';
+}
 
 export const fmtUSD = n => {
     if (n == null) return '—';

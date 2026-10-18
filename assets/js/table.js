@@ -9,8 +9,10 @@ import { scrollToAnchor } from './ui.js';
 
 export function renderCategoryButtons() {
     const cats = uniqueCategories();
+    // aria-pressed exposes the filter state to assistive tech, which the
+    // .active class alone does not.
     document.getElementById('company-categories').innerHTML = cats.map(c =>
-      `<button class="filter-btn ${c === state.categoryFilter ? 'active' : ''}" data-cat="${escapeHtml(c)}">${escapeHtml(c)}</button>`
+      `<button type="button" class="filter-btn ${c === state.categoryFilter ? 'active' : ''}" data-cat="${escapeHtml(c)}" aria-pressed="${c === state.categoryFilter}">${escapeHtml(c)}</button>`
     ).join('');
     document.querySelectorAll('#company-categories .filter-btn').forEach(btn => {
       btn.addEventListener('click', () => {
@@ -91,7 +93,11 @@ export function renderTable() {
       const isSorted = c.key === state.sortKey;
       const numCls = c.type === 'usd' || c.type === 'num' ? 'num' : '';
       const cls = isSorted ? `sorted ${state.sortAsc ? 'asc' : ''} ${numCls}` : numCls;
-      return `<th class="${cls} ${c.colClass || ''}" data-key="${c.key}">${c.label}</th>`;
+      // aria-sort conveys the sort state to assistive tech; the arrow glyph in
+      // the class name is purely visual. A <th> is not a button, so it is also
+      // made focusable and activatable by keyboard below.
+      const ariaSort = isSorted ? ` aria-sort="${state.sortAsc ? 'ascending' : 'descending'}"` : '';
+      return `<th class="${cls} ${c.colClass || ''}" data-key="${c.key}" scope="col" tabindex="0"${ariaSort}>${c.label}</th>`;
     }).join('');
 
     const colgroup = `<colgroup>
@@ -126,11 +132,18 @@ export function renderTable() {
     document.getElementById('cmp-table').innerHTML = `${colgroup}<thead><tr>${head}</tr></thead><tbody>${body}</tbody>`;
 
     document.querySelectorAll('#cmp-table thead th').forEach(th => {
-      th.addEventListener('click', () => {
+      const sortBy = () => {
         const key = th.dataset.key;
         if (state.sortKey === key) state.sortAsc = !state.sortAsc;
         else { state.sortKey = key; state.sortAsc = false; }
         renderTable();
+      };
+      th.addEventListener('click', sortBy);
+      th.addEventListener('keydown', e => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          sortBy();
+        }
       });
     });
     document.querySelectorAll('#cmp-table tbody tr').forEach(tr => {

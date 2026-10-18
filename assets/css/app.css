@@ -1283,3 +1283,19 @@
 
   /* Hide platform-injected floating badge */
   #minimax-floating-ball { display: none !important; }
+
+  /* Keyboard users can jump past the sidebar to the dashboard content. */
+  .skip-link {
+    position: absolute;
+    left: -9999px;
+    top: 8px;
+    z-index: 200;
+    padding: 10px 14px;
+    background: var(--bg-2);
+    color: var(--text-0);
+    border: 1px solid var(--border-light);
+    border-radius: 8px;
+    font-size: 13px;
+    text-decoration: none;
+  }
+  .skip-link:focus { left: 16px; }

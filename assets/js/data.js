@@ -5,11 +5,30 @@
  */
 import { state } from './state.js';
 
-export const PUBLIC_COMPANIES = new Set(['ServiceNow', 'Snowflake', 'DataDog', 'AvePoint']);
+/**
+ * Whether a company's valuation is a public market cap rather than a private
+ * post-money mark.
+ *
+ * The `is_public` flag is published by the pipeline, so the browser, the
+ * sidecar and the pipeline all share one definition. (This used to be a
+ * hardcoded set of four names here, with a comment warning that it had to stay
+ * in sync with `build/compute_stats.py` by hand.)
+ *
+ * The fallback covers data published before the flag existed: a numeric market
+ * cap is the same signal, and the contract test asserts the two always agree.
+ */
+function isPublicCompany(company) {
+  if (typeof company.is_public === 'boolean') return company.is_public;
+  const cap = (company.funding || {}).current_market_cap_usd;
+  return typeof cap === 'number' && cap > 0;
+}
 
-  // Pre-compute stats from state.companies so we have a fallback if stats.json
-  // hasn't been published yet (e.g. first page load, cache miss).
-
+/**
+ * Recompute the aggregate blocks from the loaded companies.
+ *
+ * Used as a fallback when stats.json is missing or not yet loaded, so a failed
+ * sidecar fetch degrades to correct numbers rather than blank ones.
+ */
 export function computeStatsFromCompanies() {
     const n = state.companies.length;
     // Capital raised: ONLY lifetime total_raised_usd, never fall back to
@@ -27,7 +46,7 @@ export function computeStatsFromCompanies() {
       if (typeof tr === 'number' && tr > 0) { capitalTotal += tr; capitalDisclosed += 1; }
       const amt = f.amount_usd;
       if (typeof amt === 'number' && amt > 0) { latestRoundTotal += amt; latestRoundCount += 1; }
-      if (PUBLIC_COMPANIES.has(c.name)) {
+      if (isPublicCompany(c)) {
         const cap = f.current_market_cap_usd;
         if (typeof cap === 'number' && cap > 0) { publicVal += cap; publicCount += 1; }
       } else {

@@ -4,7 +4,7 @@
  * Extracted from the original single-file index.html (Phase 2).
  */
 import { state } from './state.js';
-import { escapeHtml, fmtDateShort, fmtMonth } from './format.js';
+import { escapeHtml, fmtDateShort, fmtMonth, summaryHtml } from './format.js';
 
 export function renderTimeline(containerId, allNews = false) {
     const allItems = [];
@@ -33,7 +33,7 @@ export function renderTimeline(containerId, allNews = false) {
             <div class="timeline-content">
               <div class="timeline-co">${escapeHtml(item.company)} · ${escapeHtml(item.category)}</div>
               <div class="timeline-headline">${escapeHtml(item.headline)}</div>
-              <div class="timeline-summary">${escapeHtml(item.summary)}</div>
+              ${summaryHtml(item.headline, item.summary)}
             </div>
             <div class="timeline-date">${fmtDateShort(item.date)}</div>
           </div>

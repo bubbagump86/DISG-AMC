@@ -7,6 +7,7 @@
 <link rel="stylesheet" href="assets/css/app.css" />
 </head>
 <body>
+<a class="skip-link" href="#main">Skip to content</a>
 <div class="menu-toggle" id="menu-toggle" role="button" tabindex="0" aria-label="Toggle navigation" aria-controls="sidebar" aria-expanded="false">
   <svg width="20" height="20" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M2 3h12v2H2V3zm0 4h12v2H2V7zm0 4h12v2H2v-2z"/></svg>
 </div>
@@ -26,28 +27,28 @@
     </div>
     <div class="nav-section">
       <div class="nav-label">Dashboard</div>
-      <div class="nav-item" data-anchor="top">
-        <svg class="nav-icon" viewBox="0 0 16 16" fill="currentColor"><path d="M8 1l7 7h-4v7H5V8H1l7-7z"/></svg>
+      <div class="nav-item" role="button" tabindex="0" data-anchor="top">
+        <svg class="nav-icon" aria-hidden="true" viewBox="0 0 16 16" fill="currentColor"><path d="M8 1l7 7h-4v7H5V8H1l7-7z"/></svg>
         <span>Top</span>
       </div>
-      <div class="nav-item" data-anchor="stats">
-        <svg class="nav-icon" viewBox="0 0 16 16" fill="currentColor"><path d="M2 13h2v-3H2v3zm0-5h2V5H2v3zm4 5h2V3H6v10zm4 0h2V8h-2v5zm4 0h2V6h-2v7z"/></svg>
+      <div class="nav-item" role="button" tabindex="0" data-anchor="stats">
+        <svg class="nav-icon" aria-hidden="true" viewBox="0 0 16 16" fill="currentColor"><path d="M2 13h2v-3H2v3zm0-5h2V5H2v3zm4 5h2V3H6v10zm4 0h2V8h-2v5zm4 0h2V6h-2v7z"/></svg>
         <span>Key Stats</span>
       </div>
-      <div class="nav-item" data-anchor="table">
-        <svg class="nav-icon" viewBox="0 0 16 16" fill="currentColor"><path d="M0 2h16v2H0V2zm0 4h16v2H0V6zm0 4h16v2H0v-2zm0 4h10v2H0v-2z"/></svg>
+      <div class="nav-item" role="button" tabindex="0" data-anchor="table">
+        <svg class="nav-icon" aria-hidden="true" viewBox="0 0 16 16" fill="currentColor"><path d="M0 2h16v2H0V2zm0 4h16v2H0V6zm0 4h16v2H0v-2zm0 4h10v2H0v-2z"/></svg>
         <span>Comparison Table</span>
       </div>
-      <div class="nav-item" data-anchor="charts">
-        <svg class="nav-icon" viewBox="0 0 16 16" fill="currentColor"><path d="M2 11h12v2H2v-2zm1.5-4.5a2.5 2.5 0 015 0V11h-5V6.5zM10 11V6.5a2.5 2.5 0 015 0V11h-5z"/></svg>
+      <div class="nav-item" role="button" tabindex="0" data-anchor="charts">
+        <svg class="nav-icon" aria-hidden="true" viewBox="0 0 16 16" fill="currentColor"><path d="M2 11h12v2H2v-2zm1.5-4.5a2.5 2.5 0 015 0V11h-5V6.5zM10 11V6.5a2.5 2.5 0 015 0V11h-5z"/></svg>
         <span>Charts</span>
       </div>
-      <div class="nav-item" data-anchor="map">
-        <svg class="nav-icon" viewBox="0 0 16 16" fill="currentColor"><path d="M1 6l4-2 6 2 4-2v8l-4 2-6-2-4 2V6zm12 0v6.5l-2 1V7l2-1zM3 7v6.5l2 1V8l-2-1z"/></svg>
+      <div class="nav-item" role="button" tabindex="0" data-anchor="map">
+        <svg class="nav-icon" aria-hidden="true" viewBox="0 0 16 16" fill="currentColor"><path d="M1 6l4-2 6 2 4-2v8l-4 2-6-2-4 2V6zm12 0v6.5l-2 1V7l2-1zM3 7v6.5l2 1V8l-2-1z"/></svg>
         <span>Global Map</span>
       </div>
-      <div class="nav-item" data-anchor="timeline">
-        <svg class="nav-icon" viewBox="0 0 16 16" fill="currentColor"><path d="M2 4h12v2H2V4zm0 4h12v2H2V8zm0 4h8v2H2v-2z"/></svg>
+      <div class="nav-item" role="button" tabindex="0" data-anchor="timeline">
+        <svg class="nav-icon" aria-hidden="true" viewBox="0 0 16 16" fill="currentColor"><path d="M2 4h12v2H2V4zm0 4h12v2H2V8zm0 4h8v2H2v-2z"/></svg>
         <span>Recent Developments</span>
       </div>
 
@@ -60,7 +61,7 @@
     </div>
   </aside>
 
-  <main class="main">
+  <main class="main" id="main" tabindex="-1">
     <!-- ===== SINGLE-PAGE DASHBOARD ===== -->
     <div id="page-top" class="page-header">
       <div class="page-title">
@@ -85,7 +86,7 @@
       </div>
       <div class="filter-bar">
         <div class="search search-inline">
-          <input type="text" id="company-search" placeholder="Search by name, category, HQ…" />
+          <input type="search" id="company-search" placeholder="Search by name, category, HQ…" aria-label="Search companies by name, category or headquarters" />
         </div>
         <div class="filter-group filter-cats" id="company-categories"></div>
         <button class="filter-clear" id="filter-clear" style="display:none;">Clear filters</button>
@@ -183,7 +184,7 @@
   </main>
 </div>
 
-<div class="modal-overlay" id="modal">
+<div class="modal-overlay" id="modal" role="dialog" aria-modal="true" aria-labelledby="modal-title" hidden>
   <div class="modal" id="modal-content"></div>
 </div>
 

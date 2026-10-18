@@ -5,7 +5,7 @@
  */
 import { state } from './state.js';
 import { escapeHtml, fmtLastUpdated, fmtUSD } from './format.js';
-import { PUBLIC_COMPANIES, computeStatsFromCompanies } from './data.js';
+import { computeStatsFromCompanies } from './data.js';
 
 export function scrollToAnchor(id) {
     const el = document.getElementById(id);
@@ -48,9 +48,8 @@ export function setupScrollSpy() {
   }
 
   // ============ Stats (key stats row) ============
-  // Public companies are valued at market cap, not post-money (which is
-  // historically set once at IPO and goes stale). Keep this list in sync
-  // with build/compute_stats.py:PUBLIC_COMPANIES.
+  // Prefers the published stats.json sidecar and falls back to computing the
+  // same aggregates locally, so a missing sidecar still shows correct numbers.
 
 export function renderStats() {
     const s = state.stats || computeStatsFromCompanies();
@@ -96,14 +95,13 @@ export function renderStats() {
 export function renderSidebarCompanies() {
     document.getElementById('nav-companies').innerHTML = state.companies.map(c => {
       const anchor = 'co-' + (c._id || c.name.toLowerCase().replace(/[^a-z0-9]+/g, '-'));
-      return `<div class="nav-item" data-anchor="${anchor}">
-        <span class="nav-icon" style="width:6px; height:6px; border-radius:50%; background:var(--accent); margin: 5px 5px 5px 5px;"></span>
+      // role/tabindex so the list is reachable by keyboard; activation is
+      // handled by one delegated listener on the sidebar (see setupChrome).
+      return `<div class="nav-item" role="button" tabindex="0" data-anchor="${anchor}">
+        <span class="nav-icon" aria-hidden="true" style="width:6px; height:6px; border-radius:50%; background:var(--accent); margin: 5px 5px 5px 5px;"></span>
         <span style="font-size: 12px;">${escapeHtml(c.name)}</span>
       </div>`;
     }).join('');
-    document.querySelectorAll('#nav-companies .nav-item').forEach(item => {
-      item.addEventListener('click', () => scrollToAnchor(item.dataset.anchor));
-    });
   }
 
   // ============ Comparison table ============

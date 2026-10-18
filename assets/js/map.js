@@ -82,6 +82,64 @@ export function valuationToRadius(v) {
     return 6;                  // <$10B
   }
 
+/**
+ * Accessible name for a marker.
+ *
+ * Written into the SVG markup as well as applied in JS, so the accessibility
+ * attributes are part of the rendered output (and therefore testable) rather
+ * than depending on a wiring pass over live elements.
+ */
+function markerLabel(c, extra = '') {
+  const valuation = c.funding?.post_money_valuation_usd ?? c.funding?.current_market_cap_usd;
+  const valuationText = typeof valuation === 'number' ? `, valued at ${fmtUSD(valuation)}` : '';
+  return `${c.name}, ${c.category}, ${c.hq}${valuationText}${extra}. Press Enter for details.`;
+}
+
+/** Tooltip contents for a company marker. Shared by hover and keyboard focus. */
+function tooltipHtml(c) {
+  return `
+    <div class="tooltip-name">${escapeHtml(c.name)}</div>
+    <div class="tooltip-row"><span>HQ</span><strong>${escapeHtml(c.hq)}</strong></div>
+    <div class="tooltip-row"><span>Category</span><strong>${escapeHtml(c.category)}</strong></div>
+    <div class="tooltip-row"><span>Valuation</span><strong>${fmtUSD(c.funding?.post_money_valuation_usd)}</strong></div>
+    <div class="tooltip-row"><span>Total raised</span><strong>${fmtUSD(c.funding?.total_raised_usd || c.funding?.amount_usd)}</strong></div>
+  `;
+}
+
+/**
+ * Make an SVG marker reachable without a mouse.
+ *
+ * Markers are `<circle>` elements inside the map SVG, driven entirely by
+ * mouseenter/click/dblclick. Without an explicit tabindex and role they cannot
+ * be focused and are invisible to assistive technology, so the map is unusable
+ * by keyboard.
+ */
+function makeMarkerAccessible(dot, company, tooltip) {
+  const valuation = company.funding?.post_money_valuation_usd ?? company.funding?.current_market_cap_usd;
+  const valuationText = typeof valuation === 'number' ? `, valued at ${fmtUSD(valuation)}` : '';
+  if (!dot.getAttribute('tabindex')) dot.setAttribute('tabindex', '0');
+  if (!dot.getAttribute('role')) dot.setAttribute('role', 'button');
+  if (!dot.getAttribute('aria-label')) {
+    dot.setAttribute('aria-label', `${company.name}, ${company.category}, ${company.hq}${valuationText}. Press Enter for details.`);
+  }
+
+  dot.addEventListener('keydown', e => {
+    if (e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault();
+      e.stopPropagation();
+      openModal(company);
+    }
+  });
+  dot.addEventListener('focus', () => {
+    tooltip.innerHTML = tooltipHtml(company);
+    const rect = dot.getBoundingClientRect();
+    tooltip.style.left = Math.round(rect.left + rect.width / 2) + 'px';
+    tooltip.style.top = Math.round(rect.top - 8) + 'px';
+    tooltip.classList.add('show');
+  });
+  dot.addEventListener('blur', () => tooltip.classList.remove('show'));
+}
+
 export function renderMap() {
     const worldSvg = WORLD_MAP_SVG;
     // Strip outer <svg> wrapper to inject our own
@@ -129,7 +187,7 @@ export function renderMap() {
         const c = g.companies[0];
         const r = valuationToRadius(c.funding?.post_money_valuation_usd);
         const opacity = 0.7 + 0.3 * Math.min(1, (c.confidence === 'high' ? 1 : c.confidence === 'medium' ? 0.6 : 0.3));
-        dots += `<circle class="map-dot" cx="${baseX.toFixed(1)}" cy="${baseY.toFixed(1)}" r="${r}" data-r="${r}" fill="#58a6ff" stroke="${dotStroke}" stroke-width="${Math.max(0.5, r/8).toFixed(2)}" fill-opacity="${opacity}" data-co="${escapeHtml(c.name)}"></circle>`;
+        dots += `<circle class="map-dot" cx="${baseX.toFixed(1)}" cy="${baseY.toFixed(1)}" r="${r}" data-r="${r}" fill="#58a6ff" stroke="${dotStroke}" stroke-width="${Math.max(0.5, r/8).toFixed(2)}" fill-opacity="${opacity}" data-co="${escapeHtml(c.name)}" tabindex="0" role="button" aria-label="${escapeHtml(markerLabel(c))}"></circle>`;
       } else {
         // Multi-company cluster: render a halo + count badge + 1-2 representative dots
         // Sort by size (largest first) so the biggest pins are visible
@@ -147,13 +205,13 @@ export function renderMap() {
         dots += `<circle class="map-cluster-halo" cx="${baseX.toFixed(1)}" cy="${baseY.toFixed(1)}" r="${haloR}" fill="#58a6ff" fill-opacity="0.15" stroke="#58a6ff" stroke-width="0.5" stroke-opacity="0.4" data-hq="${escapeHtml(g.hq)}" data-cluster-size="${n}"></circle>`;
         // Big representative dot in center
         const opacity = 0.7 + 0.3 * Math.min(1, (sorted[0].confidence === 'high' ? 1 : sorted[0].confidence === 'medium' ? 0.6 : 0.3));
-        dots += `<circle class="map-dot map-dot-cluster-head" cx="${baseX.toFixed(1)}" cy="${baseY.toFixed(1)}" r="${maxR}" data-r="${maxR}" fill="#58a6ff" stroke="${dotStroke}" stroke-width="${Math.max(0.5, maxR/8).toFixed(2)}" fill-opacity="${opacity}" data-co="${escapeHtml(sorted[0].name)}" data-cluster-hq="${escapeHtml(g.hq)}"></circle>`;
+        dots += `<circle class="map-dot map-dot-cluster-head" cx="${baseX.toFixed(1)}" cy="${baseY.toFixed(1)}" r="${maxR}" data-r="${maxR}" fill="#58a6ff" stroke="${dotStroke}" stroke-width="${Math.max(0.5, maxR/8).toFixed(2)}" fill-opacity="${opacity}" data-co="${escapeHtml(sorted[0].name)}" data-cluster-hq="${escapeHtml(g.hq)}" tabindex="0" role="button" aria-label="${escapeHtml(markerLabel(sorted[0], ` and ${n - 1} more at ${g.hq}`))}"></circle>`;
         // 2nd largest at a small offset (if exists)
         if (sorted.length >= 2) {
           const r2 = valuationToRadius(sorted[1].funding?.post_money_valuation_usd);
           const dx2 = -3, dy2 = -3;
           const op2 = 0.7 + 0.3 * Math.min(1, (sorted[1].confidence === 'high' ? 1 : sorted[1].confidence === 'medium' ? 0.6 : 0.3));
-          dots += `<circle class="map-dot map-dot-cluster-peek" cx="${(baseX+dx2).toFixed(1)}" cy="${(baseY+dy2).toFixed(1)}" r="${r2}" data-r="${r2}" fill="#58a6ff" stroke="${dotStroke}" stroke-width="${Math.max(0.5, r2/8).toFixed(2)}" fill-opacity="${op2}" data-co="${escapeHtml(sorted[1].name)}" data-cluster-hq="${escapeHtml(g.hq)}"></circle>`;
+          dots += `<circle class="map-dot map-dot-cluster-peek" cx="${(baseX+dx2).toFixed(1)}" cy="${(baseY+dy2).toFixed(1)}" r="${r2}" data-r="${r2}" fill="#58a6ff" stroke="${dotStroke}" stroke-width="${Math.max(0.5, r2/8).toFixed(2)}" fill-opacity="${op2}" data-co="${escapeHtml(sorted[1].name)}" data-cluster-hq="${escapeHtml(g.hq)}" aria-hidden="true" tabindex="-1"></circle>`;
         }
         // Count badge
         dots += `<g class="map-cluster-badge" data-hq="${escapeHtml(g.hq)}">
@@ -326,14 +384,12 @@ export function renderMap() {
     wrap.querySelectorAll('.map-dot').forEach(dot => {
       const name = dot.dataset.co;
       const c = state.companies.find(x => x.name === name);
+      if (!c) return;
+      // Markers are SVG circles driven by mouse events; without these they are
+      // unreachable by keyboard and invisible to assistive tech.
+      makeMarkerAccessible(dot, c, tooltip);
       dot.addEventListener('mouseenter', (e) => {
-        tooltip.innerHTML = `
-          <div class="tooltip-name">${escapeHtml(c.name)}</div>
-          <div class="tooltip-row"><span>HQ</span><strong>${escapeHtml(c.hq)}</strong></div>
-          <div class="tooltip-row"><span>Category</span><strong>${escapeHtml(c.category)}</strong></div>
-          <div class="tooltip-row"><span>Valuation</span><strong>${fmtUSD(c.funding?.post_money_valuation_usd)}</strong></div>
-          <div class="tooltip-row"><span>Total raised</span><strong>${fmtUSD(c.funding?.total_raised_usd || c.funding?.amount_usd)}</strong></div>
-        `;
+        tooltip.innerHTML = tooltipHtml(c);
         tooltip.classList.add('show');
       });
       dot.addEventListener('mousemove', (e) => {
@@ -423,14 +479,9 @@ export function renderMap() {
         const name = dot.getAttribute('data-co');
         const c = state.companies.find(x => x.name === name);
         if (!c) return;
+        makeMarkerAccessible(dot, c, tooltip);
         dot.addEventListener('mouseenter', (e) => {
-          tooltip.innerHTML = `
-            <div class="tooltip-name">${escapeHtml(c.name)}</div>
-            <div class="tooltip-row"><span>HQ</span><strong>${escapeHtml(c.hq)}</strong></div>
-            <div class="tooltip-row"><span>Category</span><strong>${escapeHtml(c.category)}</strong></div>
-            <div class="tooltip-row"><span>Valuation</span><strong>${fmtUSD(c.funding?.post_money_valuation_usd)}</strong></div>
-            <div class="tooltip-row"><span>Total raised</span><strong>${fmtUSD(c.funding?.total_raised_usd || c.funding?.amount_usd)}</strong></div>
-          `;
+          tooltip.innerHTML = tooltipHtml(c);
           tooltip.classList.add('show');
         });
         dot.addEventListener('mousemove', (e) => {

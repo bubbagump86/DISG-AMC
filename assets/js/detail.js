@@ -4,7 +4,7 @@
  * Extracted from the original single-file index.html (Phase 2).
  */
 import { state } from './state.js';
-import { escapeHtml, fmtDate, fmtUSD } from './format.js';
+import { escapeHtml, fmtDate, fmtUSD, summaryHtml } from './format.js';
 
 export function renderDetailSections() {
     const html = state.companies.map(c => {
@@ -81,7 +81,7 @@ export function renderDetailSections() {
                     <div class="timeline-content">
                       <div class="timeline-date" style="display: block; margin-bottom: 4px;">${fmtDate(n.date)}</div>
                       <div class="timeline-headline">${escapeHtml(n.headline)}</div>
-                      <div class="timeline-summary">${escapeHtml(n.summary)}</div>
+                      ${summaryHtml(n.headline, n.summary)}
                       ${n.source ? `<a class="source-link" href="${escapeHtml(n.source)}" target="_blank" rel="noopener" style="margin-top: 6px; display: inline-block;">View source ↗</a>` : ''}
                     </div>
                   </div>
@@ -111,13 +111,22 @@ export function renderDetailSections() {
 
   // ============ Modal ============
 
+/**
+ * The element focused before the dialog opened, so focus can be returned to it.
+ * Restoring focus is what stops keyboard users being dumped back at the top of
+ * the document after closing.
+ */
+let focusBeforeModal = null;
+
 export function openModal(c) {
     const news = c.latest_news || [];
     const sources = c.sources || [];
+    const overlay = document.getElementById('modal');
+    focusBeforeModal = document.activeElement || null;
     document.getElementById('modal-content').innerHTML = `
       <div class="modal-header">
         <div class="modal-title">
-          <h2>${escapeHtml(c.name)}</h2>
+          <h2 id="modal-title">${escapeHtml(c.name)}</h2>
           <div class="modal-subtitle">
             <span class="badge badge-cat">${escapeHtml(c.category)}</span>
             <span>Founded ${escapeHtml(c.founded || '—')}</span>
@@ -166,7 +175,7 @@ export function openModal(c) {
                   <div class="timeline-content">
                     <div class="timeline-date" style="display: block; margin-bottom: 4px;">${fmtDate(n.date)}</div>
                     <div class="timeline-headline">${escapeHtml(n.headline)}</div>
-                    <div class="timeline-summary">${escapeHtml(n.summary)}</div>
+                    ${summaryHtml(n.headline, n.summary)}
                     ${n.source ? `<a class="source-link" href="${escapeHtml(n.source)}" target="_blank" rel="noopener" style="margin-top: 6px; display: inline-block;">View source →</a>` : ''}
                   </div>
                 </div>
@@ -186,11 +195,23 @@ export function openModal(c) {
         </div>
       </div>
     `;
-    document.getElementById('modal').classList.add('open');
+    overlay.classList.add('open');
+    overlay.removeAttribute('hidden');
+    // Move focus into the dialog so the next Tab press stays inside it and
+    // screen readers announce it.
+    const dialog = document.getElementById('modal-content');
+    dialog.setAttribute('tabindex', '-1');
+    if (typeof dialog.focus === 'function') dialog.focus();
   }
 
 export function closeModal() {
-    document.getElementById('modal').classList.remove('open');
+    const overlay = document.getElementById('modal');
+    overlay.classList.remove('open');
+    overlay.setAttribute('hidden', '');
+    if (focusBeforeModal && typeof focusBeforeModal.focus === 'function') {
+      focusBeforeModal.focus();
+    }
+    focusBeforeModal = null;
   }
 
   // ============ Init ============

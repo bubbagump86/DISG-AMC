@@ -2,8 +2,9 @@
 
 Strategic intelligence on 40 of the most important AI companies in 2026.
 
-Static site: `index.html` + `data.json` + `stats.json`, served over GitHub Pages.
-No build step, no framework, no CDN, **no third-party Python dependencies**.
+Static site: `index.html` + `assets/` + `data.json` + `stats.json`, served over
+GitHub Pages. No build step, no bundler, no framework, no CDN, and **no
+third-party dependencies** -- neither Python nor JS.
 
 ## Repo status
 
@@ -15,7 +16,7 @@ as a permanent URL.
 | --- | --- | --- |
 | 0 | Golden fixtures + dataset contract suite | done |
 | 1 | Rebuild the `refresh.py` pipeline | **done** |
-| 2 | Split the 2792-line `index.html` into ES modules | not started |
+| 2 | Split the 2792-line `index.html` into ES modules | **done** |
 | 3 | GitHub Actions cron + enable Pages | not started |
 
 Two things were missing from the original and have been replaced here: the daily
@@ -25,7 +26,19 @@ monolithic `index.html`.
 ## Layout
 
 ```
-index.html                    served page (fetches ./data.json, ./stats.json)
+index.html                    markup only (196 lines, down from 2792)
+assets/css/app.css            styles
+assets/js/                    ES modules, loaded natively (no bundler)
+  app.js                      entry point: theme/chrome wiring, init, bootstrap
+  state.js                    shared mutable state
+  data.js                     data.json / stats.json loading + aggregate fallback
+  format.js                   formatting, escaping, summary suppression
+  ui.js                       scrolling, sidebar, skip-to-content, key-stats row
+  table.js                    filters, sorting, comparison table
+  charts.js                   SVG bar charts and the donut
+  map.js                      Robinson projection, markers, zoom, fan-out
+  timeline.js                 recent developments
+  detail.js                   company sections and the modal
 data.json                     published dataset -- generated, do not hand-edit
 stats.json                    published aggregates -- generated
 pipeline/
@@ -43,10 +56,18 @@ tests/
   test_contract.py            published-data contract, snapshot and drift guards
   test_rss.py  test_sources.py  test_stats.py  test_funding.py  test_refresh.py
   fixtures/                   frozen snapshots + captured real feeds
+  web/
+    dom.mjs                   minimal DOM shim (no jsdom available here)
+    smoke.mjs                 runs the page's own JS and asserts it rendered
+    unit.mjs                  unit tests for the pure modules
+package.json                  type: module, so Node can run the ES modules
+                              under test. No dependencies.
 ```
 
-Files sit at the repo root because the live page fetches `./data.json`. Phase 2
-moves them under `data/`; the tests already resolve both locations.
+`data.json` / `stats.json` stay at the repo root: that is the path the live page
+already fetches, so the deployed original and this rebuild behave identically.
+(The earlier plan to move them under `data/` was dropped as pure churn -- the
+Python tests still resolve either location, so the move remains cheap later.)
 
 ## The pipeline
 
@@ -117,11 +138,12 @@ live run, 28 of them high or medium confidence.
 Stdlib only — nothing to install:
 
 ```bash
-python -m unittest discover -s tests -v     # 146 tests
+python -m unittest discover -s tests -v     # 154 tests (data + pipeline)
+npm test                                    # 19 unit + 29 smoke (browser code)
 pytest tests -v                             # also works, if installed
 ```
 
-Expected result: **OK**.
+Expected result: **OK** from each.
 
 | Suite | Guards |
 | --- | --- |
@@ -131,6 +153,8 @@ Expected result: **OK**.
 | `test_stats` | Aggregate rules, public vs private, disclosure counts |
 | `test_funding` | Amount/round/valuation parsing, speculation rejection, churn threshold, guard rails |
 | `test_refresh` | End-to-end offline runs, idempotency, `--check`/`--dry-run`, curated data safety |
+| `unit.mjs` | Formatters, escaping, summary suppression, aggregate rules, map projection |
+| `smoke.mjs` | Runs the real modules against a DOM shim: data fetched, every render produced content, a row per company, accessibility attributes present, and **no swallowed console errors** |
 
 `tests/fixtures/*.snapshot.json` freeze the published data. Any intended change
 means updating the snapshot deliberately in the same commit; unexpected drift
@@ -150,6 +174,30 @@ build so generated output can be validated before publishing.
   so the sidecar, the browser fallback and the pipeline share one definition.
 - Added `source_name` / `source_url` / `feed` to news items; history was
   backfilled from the headline's publisher suffix.
+
+## Defects fixed in Phase 2
+
+- The inline `onclick` handlers stopped working the moment the script became a
+  module (module scope is not global scope). Rewired in JS, with a smoke check
+  that fails if markup reintroduces one.
+- `PUBLIC_COMPANIES` was a hardcoded set of four names in the browser, carrying a
+  comment telling the reader to keep it in sync with `build/compute_stats.py` by
+  hand. Removed: the browser now reads `is_public` from the data.
+- Every news summary was printed twice. Google News supplies only
+  "headline + publisher" as its description, and the old data duplicated the
+  headline outright; redundant summaries are now suppressed.
+- `escapeHtml(0)` returned an empty string, because the guard was
+  `String(s || '')` and `0` is falsy.
+- Accessibility: the map's SVG markers were mouse-only (now focusable, labelled,
+  and activated with Enter/Space); the modal had no dialog semantics, focus
+  management or focus trap; filters had no `aria-pressed`; table headers had no
+  `aria-sort` or keyboard activation; the search input had no accessible name;
+  and there was no skip link or `main` landmark. The 40+ per-item sidebar
+  listeners were replaced with one delegated handler that also handles the
+  keyboard.
+- The map projection was audited rather than assumed correct: all 40 markers
+  fall inside the SVG viewBox and known cities land in the right relative
+  positions. Now covered by a unit test.
 
 ## Open questions
 

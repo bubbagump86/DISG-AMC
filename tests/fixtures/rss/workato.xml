@@ -1,0 +1,484 @@
+<?xml version='1.0' encoding='utf-8'?>
+<rss xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:sy="http://purl.org/rss/1.0/modules/syndication/" version="2.0">
+
+<channel>
+	<title>Workato</title>
+	<atom:link href="https://www.workato.com/the-connector/feed/" rel="self" type="application/rss+xml" />
+	<link>https://www.workato.com/the-connector/</link>
+	<description />
+	<lastBuildDate>Wed, 14 Oct 2026 16:59:02 +0000</lastBuildDate>
+	<language>en-US</language>
+	<sy:updatePeriod>
+	hourly	</sy:updatePeriod>
+	<sy:updateFrequency>
+	1	</sy:updateFrequency>
+	
+
+<image>
+	<url>https://www.workato.com/the-connector/wp-content/uploads/2026/08/cropped-favicon-32x32.png</url>
+	<title>Workato</title>
+	<link>https://www.workato.com/the-connector/</link>
+	<width>32</width>
+	<height>32</height>
+</image> 
+	<item>
+		<title>How Persefoni Built a Council of 12 AI Agents to Build on Workato</title>
+		<link>https://www.workato.com/the-connector/wow-2026-persefoni-ai-agent-council/</link>
+		
+		<dc:creator>Haillie Parker</dc:creator>
+		<pubDate>Wed, 14 Oct 2026 16:59:01 +0000</pubDate>
+				<category>AI Agents &amp; Orchestration</category>
+		<category>Customer Stories</category>
+		<guid isPermaLink="false">https://blog2workato.wpengine.com/?p=16709</guid>
+
+					<description>&lt;p&gt;Matt Palmer&amp;#8217;s team of specialized agents takes a Jira ticket from backlog to built, tested, and reviewed in minutes. A human still decides what ships. At World of Workato (WOW) in Las Vegas, Matt Palmer, Automation and Integration Lead at Persefoni, a carbon management and accounting platform, walked through the team of AI agents he [&amp;#8230;]&lt;/p&gt;
+&lt;p&gt;The post &lt;a href="https://www.workato.com/the-connector/wow-2026-persefoni-ai-agent-council/"&gt;How Persefoni Built a Council of 12 AI Agents to Build on Workato&lt;/a&gt; appeared first on &lt;a href="https://www.workato.com/the-connector"&gt;Workato&lt;/a&gt;.&lt;/p&gt;
+</description>
+										<content:encoded>
+&lt;p class="wp-block-paragraph"&gt;&lt;em&gt;Matt Palmer&amp;#8217;s team of specialized agents takes a Jira ticket from backlog to built, tested, and reviewed in minutes. A human still decides what ships.&lt;/em&gt;&lt;/p&gt;
+
+
+
+&lt;p class="wp-block-paragraph"&gt;At &lt;a href="https://mktg.workato.com/wow-2026-recap" target="_blank" rel="noreferrer noopener"&gt;World of Workato (WOW)&lt;/a&gt; in Las Vegas, &lt;a href="https://www.linkedin.com/in/matt-palmer-854298b7/" target="_blank" rel="noreferrer noopener"&gt;Matt Palmer&lt;/a&gt;, Automation and Integration Lead at &lt;a href="https://www.persefoni.com/" target="_blank" rel="noreferrer noopener nofollow"&gt;Persefoni&lt;/a&gt;, a carbon management and accounting platform, walked through the team of AI agents he used to build in Workato. He calls it the “Jedi Council.” &lt;a href="https://www.linkedin.com/in/huynh-quoc-viet/" target="_blank" rel="noreferrer noopener"&gt;Viet Huynh&lt;/a&gt; from Workato&amp;#8217;s AI business solutions team introduced him.&lt;/p&gt;
+
+
+
+&lt;p class="wp-block-paragraph"&gt;Matt&amp;#8217;s message was practical: split the work into narrow roles, give each agent only the tools it needs, and keep a human at the moves that matter.&lt;/p&gt;
+
+
+
+&lt;h2 class="wp-block-heading"&gt;&lt;strong&gt;One agent with all the knowledge kept making mistakes&lt;/strong&gt;&lt;/h2&gt;
+
+
+
+&lt;p class="wp-block-paragraph"&gt;Matt started in December with a single Claude chat session and a developer MCP he built on Workato&amp;#8217;s APIs. He drove the architecture, the recipe build, review, and testing himself. A single autonomous agent was better, and he gave it skills describing what a recipe, a function, or a Salesforce trigger looks like.&lt;/p&gt;
+
+
+
+&lt;p class="wp-block-paragraph"&gt;It still made errors it had the context to avoid. When he asked why, the agent agreed it should have called the right skill. His conclusion: &amp;#8220;It was too much knowledge for any one agent.&amp;#8221;&lt;/p&gt;
+
+
+
+&lt;p class="wp-block-paragraph"&gt;So he split the knowledge and responsibilities across agents, each with a narrow focus. That, he said, is where the real improvement began.&lt;/p&gt;
+
+
+
+&lt;h2 class="wp-block-heading"&gt;&lt;strong&gt;Organize agents the way you would organize a team&lt;/strong&gt;&lt;/h2&gt;
+
+
+
+&lt;p class="wp-block-paragraph"&gt;Matt&amp;#8217;s council has four groups:&lt;/p&gt;
+
+
+
+&lt;h3 class="wp-block-heading"&gt;&lt;strong&gt;Orchestration&lt;/strong&gt;&lt;/h3&gt;
+
+
+
+&lt;p class="wp-block-paragraph"&gt;“Yoda,” the orchestrator, picks up work from Jira and assigns it. The architect writes and updates Jira tickets to shape how work gets done, but doesn&amp;#8217;t assign work.&lt;/p&gt;
+
+
+
+&lt;h3 class="wp-block-heading"&gt;&lt;strong&gt;Builders&lt;/strong&gt;&lt;/h3&gt;
+
+
+
+&lt;p class="wp-block-paragraph"&gt;Specialists for agentic skills, the connector SDK, recipes, and API endpoints.&lt;/p&gt;
+
+
+
+&lt;h3 class="wp-block-heading"&gt;&lt;strong&gt;Reviewers and testers&lt;/strong&gt;&lt;/h3&gt;
+
+
+
+&lt;p class="wp-block-paragraph"&gt;“Obi-Wan” is a pair-programming partner, “Qui-Gon” reviews, and “Ahsoka” tests. “Palpatine”, the one Sith, acts as an adversarial agent that pushes the others to question their work.&lt;/p&gt;
+
+
+
+&lt;h3 class="wp-block-heading"&gt;&lt;strong&gt;Foundation&lt;/strong&gt;&lt;/h3&gt;
+
+
+
+&lt;p class="wp-block-paragraph"&gt;A knowledge agent compiles what the agents learn and keeps their memories clean. A workspace steward creates the data tables, properties, folders, projects, and &lt;a href="https://www.workato.com/agentic/mcp" target="_blank" rel="noreferrer noopener"&gt;MCPs&lt;/a&gt; in the Workato workspace.&lt;/p&gt;
+
+
+
+&lt;p class="wp-block-paragraph"&gt;These are “Hermes” agents, not &lt;a href="https://www.workato.com/agentic" target="_blank" rel="noreferrer noopener"&gt;Workato Genies&lt;/a&gt;. Each runs on its own virtual machine with its own Slack identity, and most of their coordination happens in Slack. They began improving noticeably, Matt said, after he added an open source memory project to give each agent more room to remember.&lt;/p&gt;
+
+
+
+&lt;h2 class="wp-block-heading"&gt;&lt;strong&gt;Use the CLI for code and AIRO for the rest&lt;/strong&gt;&lt;/h2&gt;
+
+
+
+&lt;p class="wp-block-paragraph"&gt;Agents use the Workato CLI to pull recipe code to a local workspace, where they edit it and push it back. Matt likes having the code local: agents can review the whole workspace at once and answer questions like &amp;#8220;find all my recipes that have this action.&amp;#8221; He recently added the &lt;a href="https://www.workato.com/platform/airo" target="_blank" rel="noreferrer noopener"&gt;AIRO MCP&lt;/a&gt; for what the CLI can&amp;#8217;t do, such as adding records to data tables or setting project and environment properties. &lt;/p&gt;
+
+
+
+&lt;h2 class="wp-block-heading"&gt;&lt;strong&gt;A live demo caught a silent failure&lt;/strong&gt;&lt;/h2&gt;
+
+
+
+&lt;p class="wp-block-paragraph"&gt;In the demo, “Yoda” picked up a real ticket from Matt&amp;#8217;s backlog without being prompted. A builder started on a skill that searches Salesforce quotes. “Obi-Wan” flagged that a shortcut could return nothing and asked about the fallback.&lt;/p&gt;
+
+
+
+&lt;p class="wp-block-paragraph"&gt;“Ahsoka” then paused for human sign-off before executing the code. Matt approved, and she ran a live test against real Salesforce data in his sandbox. She found that searching only by approved status reported success while missing the account or opportunity ID it needed. It looked like it worked, but it didn&amp;#8217;t. That was the risk “Obi-Wan” had flagged. “Qui-Gon” then read the code line by line, including the SOQL queries.&lt;/p&gt;
+
+
+
+&lt;p class="wp-block-paragraph"&gt;The point, Matt said, is not replacing builders:&lt;/p&gt;
+
+
+
+&lt;blockquote class="wp-block-quote is-layout-flow wp-block-quote-is-layout-flow"&gt;
+&lt;p class="wp-block-paragraph"&gt;&amp;#8220;This isn&amp;#8217;t about replacing your builders, it&amp;#8217;s about giving every one of them a tireless apprentice who takes the first pass, and so your people spend their hours on judgment, not on building the plumbing.&amp;#8221; &lt;br&gt;&lt;br&gt;— &lt;strong&gt;Matt Palmer, Automation and Integration Lead, Persefoni&lt;/strong&gt;&lt;/p&gt;
+&lt;/blockquote&gt;
+
+
+
+&lt;h2 class="wp-block-heading"&gt;&lt;strong&gt;Humans stay at the gates, and permissions are split&lt;/strong&gt;&lt;/h2&gt;
+
+
+
+&lt;p class="wp-block-paragraph"&gt;Agents don&amp;#8217;t push to production. Matt does. He splits permissions the way you would for human staff: builders can write code in Workato, while reviewers and testers can&amp;#8217;t. Only the orchestrator and architect can create Jira tickets. If a system has only a production instance, he wouldn&amp;#8217;t let agents push there at all.&lt;/p&gt;
+
+
+
+&lt;p class="wp-block-paragraph"&gt;He is candid about limits. Observability is mostly Slack plus Workato logs of MCP calls. The CLI is more of a black box, and he can&amp;#8217;t see in Workato which agent made a given API call. When he first put all 12 agents in one channel without ground rules, a single greeting set off about 2,500 messages in a thread, and he used “Hermes” slash commands to stop them.&lt;/p&gt;
+
+
+
+&lt;h2 class="wp-block-heading"&gt;&lt;strong&gt;The output gap, and where to start&lt;/strong&gt;&lt;/h2&gt;
+
+
+
+&lt;p class="wp-block-paragraph"&gt;&lt;strong&gt;Matt worked 397 Jira tickets in 2025. He says he is now close to four times that with three months of the year left&lt;/strong&gt;, and that his output jumped once the full council was running in April. His role has changed, too:&lt;/p&gt;
+
+
+
+&lt;blockquote class="wp-block-quote is-layout-flow wp-block-quote-is-layout-flow"&gt;
+&lt;p class="wp-block-paragraph"&gt;&amp;#8220;[With these agents], I feel like a manager with employees producing the work.&amp;#8221; &lt;br&gt;&lt;br&gt;— &lt;strong&gt;Matt Palmer, Automation and Integration Lead, Persefoni&lt;/strong&gt;&lt;/p&gt;
+&lt;/blockquote&gt;
+
+
+
+&lt;p class="wp-block-paragraph"&gt;For anyone who wants to try it, he suggests starting where he did: get comfortable in Claude Code, add the AIRO MCP, and install the Workato CLI. As you learn the rhythm, you can run additional sessions while a builder works. His limit is how much context he can juggle across sessions.&lt;/p&gt;
+
+
+
+&lt;p class="wp-block-paragraph"&gt;He hopes better testing features will eventually let him step out of the loop. For now, he&amp;#8217;d put new teammates through the foundations first.&lt;/p&gt;
+
+
+
+&lt;p class="has-color-mutted-blue-background-color has-background wp-block-paragraph"&gt;&lt;strong&gt;The future of work is being planned at World of Workato. &lt;a href="https://www.workato.com/events/wow" target="_blank" rel="noopener"&gt;Save the date for WOW 2027.&lt;/a&gt;&lt;/strong&gt;&lt;/p&gt;
+
+
+
+&lt;p class="wp-block-paragraph"&gt;&lt;/p&gt;
+&lt;p&gt;The post &lt;a href="https://www.workato.com/the-connector/wow-2026-persefoni-ai-agent-council/"&gt;How Persefoni Built a Council of 12 AI Agents to Build on Workato&lt;/a&gt; appeared first on &lt;a href="https://www.workato.com/the-connector"&gt;Workato&lt;/a&gt;.&lt;/p&gt;
+</content:encoded>
+					
+		
+		
+			</item>
+		<item>
+		<title>Zendesk and Plusgrade on Two Paths to Production AI</title>
+		<link>https://www.workato.com/the-connector/wow-2026-zendesk-plusgrade-production-ai/</link>
+		
+		<dc:creator>Haillie Parker</dc:creator>
+		<pubDate>Wed, 14 Oct 2026 16:54:17 +0000</pubDate>
+				<category>AI Agents &amp; Orchestration</category>
+		<category>Customer Stories</category>
+		<guid isPermaLink="false">https://blog2workato.wpengine.com/?p=16706</guid>
+
+					<description>&lt;p&gt;One company leaned into organized chaos and decentralized execution. The other is building a reusable library of AI skills. Both say the hard part isn&amp;#8217;t the technology. At World of Workato (WOW) in Las Vegas, Andres Ramirez, Chief Strategic Architect at Workato, sat down with two customers who took very different routes to the same [&amp;#8230;]&lt;/p&gt;
+&lt;p&gt;The post &lt;a href="https://www.workato.com/the-connector/wow-2026-zendesk-plusgrade-production-ai/"&gt;Zendesk and Plusgrade on Two Paths to Production AI&lt;/a&gt; appeared first on &lt;a href="https://www.workato.com/the-connector"&gt;Workato&lt;/a&gt;.&lt;/p&gt;
+</description>
+										<content:encoded>
+&lt;p class="wp-block-paragraph"&gt;&lt;em&gt;One company leaned into organized chaos and decentralized execution. The other is building a reusable library of AI skills. Both say the hard part isn&amp;#8217;t the technology.&lt;/em&gt;&lt;/p&gt;
+
+
+
+&lt;p class="wp-block-paragraph"&gt;At &lt;a href="https://mktg.workato.com/wow-2026-recap" target="_blank" rel="noreferrer noopener"&gt;World of Workato (WOW)&lt;/a&gt; in Las Vegas, &lt;a href="https://www.linkedin.com/in/andresramirezv/" target="_blank" rel="noreferrer noopener"&gt;Andres Ramirez&lt;/a&gt;, Chief Strategic Architect at Workato, sat down with two customers who took very different routes to the same goal: getting AI out of the pilot stage and into production. &lt;a href="https://www.linkedin.com/in/martin-pomerleau-436b464/" target="_blank" rel="noreferrer noopener"&gt;Martin Pomerleau&lt;/a&gt;, VP, Corporate Systems and Information Security at &lt;a href="https://www.plusgrade.com/" target="_blank" rel="noreferrer noopener"&gt;Plusgrade&lt;/a&gt;, and &lt;a href="https://www.linkedin.com/in/daviesmathew/" target="_blank" rel="noreferrer noopener"&gt;Mathew Davies&lt;/a&gt;, Senior Staff Software Engineer at &lt;a href="https://www.zendesk.com/" target="_blank" rel="noreferrer noopener"&gt;Zendesk&lt;/a&gt;, shared what worked, what didn&amp;#8217;t, and why neither believes in a single right answer.&lt;/p&gt;
+
+
+
+&lt;h2 class="wp-block-heading"&gt;&lt;strong&gt;Start with an operating model, because the model isn&amp;#8217;t enough&lt;/strong&gt;&lt;/h2&gt;
+
+
+
+&lt;p class="wp-block-paragraph"&gt;Andres opened with a framework he uses with large customers: think of AI strategy as an AI operating system. The agentic reasoning layer, with its models, frameworks, and harnesses, changes constantly, and its biggest challenge is governance. On the other side sit the business capabilities most teams have spent years building: workflows, approvals, and integrations. In between is an AI control plane that connects the two.&lt;/p&gt;
+
+
+
+&lt;p class="wp-block-paragraph"&gt;His test for whether those capabilities are ready for AI: are they cloud native, composable, and zero ops? And platform alone doesn&amp;#8217;t finish the job. People and operating model matter just as much.&lt;/p&gt;
+
+
+
+&lt;h2 class="wp-block-heading"&gt;&lt;strong&gt;Plusgrade: take a reasonable risk, with guardrails&lt;/strong&gt;&lt;/h2&gt;
+
+
+
+&lt;p class="wp-block-paragraph"&gt;Plusgrade, a travel technology company headquartered in Montreal, received a mandate to deploy AI last Fall. It chose a federated operating model and Workato as its main governance tool. After procurement in January and platform access, its first end-to-end process with an agent was running by the end of March.&lt;/p&gt;
+
+
+
+&lt;p class="wp-block-paragraph"&gt;Martin called the approach &amp;#8220;organized chaos,&amp;#8221; and he argued that standing still carries its own risk:&lt;/p&gt;
+
+
+
+&lt;blockquote class="wp-block-quote is-layout-flow wp-block-quote-is-layout-flow"&gt;
+&lt;p class="wp-block-paragraph"&gt;&amp;#8220;Missing the boat, the AI boat, is a risk by itself.&amp;#8221; &lt;br&gt;&lt;br&gt;— &lt;strong&gt;Martin Pomerleau, VP, Corporate Systems and Information Security, Plusgrade&lt;/strong&gt;&lt;/p&gt;
+&lt;/blockquote&gt;
+
+
+
+&lt;p class="wp-block-paragraph"&gt;The first use case was complex enough to build on but not the hardest one. Martin put his best solution architect and best security architect on it and gave them a clear mandate. Guardrails came first: non-production development, a private link, and no PII. The agent parsed information from an airline partner, but a script, not the agent, wrote to the database. The team ran a dark release for a week, watching what the AI did before going live.&lt;/p&gt;
+
+
+
+&lt;h2 class="wp-block-heading"&gt;&lt;strong&gt;Federate execution, but keep a steward community&lt;/strong&gt;&lt;/h2&gt;
+
+
+
+&lt;p class="wp-block-paragraph"&gt;Martin&amp;#8217;s central team owns connectors, governance, and IT and security. Execution sits with the business, so the central team doesn&amp;#8217;t become a bottleneck. A steward community, which meets every two weeks, adds structure. Each steward reports to an SVP and is accountable for deciding whether a use case is worth building. Anything critical gets moved to the enterprise team, and anything reusable gets shared. A small centralized automation team handles complex cross-department work.&lt;/p&gt;
+
+
+
+&lt;p class="wp-block-paragraph"&gt;Martin&amp;#8217;s rule on operating models was blunt: pick one and execute on it.&lt;/p&gt;
+
+
+
+&lt;p class="wp-block-paragraph"&gt;Adoption has been easy. Plusgrade expects everyone, in every function, to become fluent in AI, and the CIO personally picked the first 50 use cases for the initial 50 licenses.&amp;nbsp;&lt;/p&gt;
+
+
+
+&lt;h2 class="wp-block-heading"&gt;&lt;strong&gt;Zendesk: from order taker to shared architecture&lt;/strong&gt;&lt;/h2&gt;
+
+
+
+&lt;p class="wp-block-paragraph"&gt;Mathew&amp;#8217;s team owns most of the company&amp;#8217;s back-office integrations, a portfolio of about 60. For years, it worked like a factory for point-to-point integrations. That didn&amp;#8217;t scale, and it often built the wrong integration. Now the team is anchoring on business outcomes, then architecture, then capabilities.&lt;/p&gt;
+
+
+
+&lt;p class="wp-block-paragraph"&gt;The key unlock, he said, is &lt;a href="https://www.workato.com/enterprise-skills" target="_blank" rel="noreferrer noopener"&gt;Workato Enterprise Skills&lt;/a&gt;. Break the work into core capabilities, turn many of them into reusable skills, and deliver each in the right way: through an MCP service, a custom agent, or pure orchestration with no human in the loop. Over time, that frees engineers from repetitive requests and &amp;#8220;why did this job fail&amp;#8221; questions.&lt;/p&gt;
+
+
+
+&lt;p class="wp-block-paragraph"&gt;Mathew was candid about the obstacle: &amp;#8220;Zendesk itself, in a way, is almost like a collection of companies rather than a single company.&amp;#8221;&lt;/p&gt;
+
+
+
+&lt;p class="wp-block-paragraph"&gt;He said that for every day spent building an agent, he spends about a month on approvals, conversations, and buy-in.&lt;/p&gt;
+
+
+
+&lt;h2 class="wp-block-heading"&gt;&lt;strong&gt;What Zendesk learned from the agents that didn&amp;#8217;t take off&lt;/strong&gt;&lt;/h2&gt;
+
+
+
+&lt;p class="wp-block-paragraph"&gt;Mathew&amp;#8217;s cautionary tale: after seeing an early version of the &lt;a href="https://www.workato.com/agentic" target="_blank" rel="noreferrer noopener"&gt;Workato Genie&lt;/a&gt; at a WOW event, he built a sales agent with about 15 skills in a matter of days. Approvals took six months. It never took off, because it started from an abstract idea of what a sales agent should do rather than the real sales process, and nobody had been taught how to use it.&lt;/p&gt;
+
+
+
+&lt;p class="wp-block-paragraph"&gt;The lesson now guides Zendesk&amp;#8217;s MCP rollout: deliver what users need, with enablement, close work with team leads, and a tight feedback loop.&lt;/p&gt;
+
+
+
+&lt;p class="wp-block-paragraph"&gt;A smaller win shows the other side. During a major product and ordering launch, Mathew was spending hours tracing failed orders through hundreds of Datadog logs. He spent a couple of days building an agent in &lt;a href="https://www.workato.com/agentstudio" target="_blank" rel="noreferrer noopener"&gt;Agent Studio&lt;/a&gt;, connected to Datadog and the order platform. &lt;/p&gt;
+
+
+
+&lt;p class="wp-block-paragraph"&gt;Now, asking it why an order failed returns an answer in about fifteen seconds, and the questions mostly stopped coming to him.&lt;/p&gt;
+
+
+
+&lt;h2 class="wp-block-heading"&gt;&lt;strong&gt;Security reviews, with a head start&lt;/strong&gt;&lt;/h2&gt;
+
+
+
+&lt;p class="wp-block-paragraph"&gt;Both leaders still face security teams. Martin&amp;#8217;s answer was to understand the risk and limit it. Mathew said Workato&amp;#8217;s existing security documentation, such as audit reports and a vendor security review already on file, shortened the work.&lt;/p&gt;
+
+
+
+&lt;h2 class="wp-block-heading"&gt;&lt;strong&gt;The takeaway&lt;/strong&gt;&lt;/h2&gt;
+
+
+
+&lt;p class="wp-block-paragraph"&gt;Andres closed with the shared lesson: there is no right operating model. Federated, centralized, or hybrid can all work if it fits your organization. The common thread was people. Both customers described the hard problems as buy-in, resourcing, and changing habits, and that is where they spent their time.&lt;/p&gt;
+
+
+
+&lt;p class="has-color-mutted-blue-background-color has-background wp-block-paragraph"&gt;&lt;strong&gt;The future of work is being planned at World of Workato. &lt;a href="https://www.workato.com/events/wow" target="_blank" rel="noopener"&gt;Save the date for WOW 2027.&lt;/a&gt;&lt;/strong&gt;&lt;/p&gt;
+
+
+
+&lt;p class="wp-block-paragraph"&gt;&lt;/p&gt;
+&lt;p&gt;The post &lt;a href="https://www.workato.com/the-connector/wow-2026-zendesk-plusgrade-production-ai/"&gt;Zendesk and Plusgrade on Two Paths to Production AI&lt;/a&gt; appeared first on &lt;a href="https://www.workato.com/the-connector"&gt;Workato&lt;/a&gt;.&lt;/p&gt;
+</content:encoded>
+					
+		
+		
+			</item>
+		<item>
+		<title>Red Hat and Lenovo on What to Build and What to Buy</title>
+		<link>https://www.workato.com/the-connector/wow-2026-red-hat-lenovo-enterprise-ai-lessons/</link>
+		
+		<dc:creator>Haillie Parker</dc:creator>
+		<pubDate>Wed, 14 Oct 2026 16:47:34 +0000</pubDate>
+				<category>AI Agents &amp; Orchestration</category>
+		<category>Customer Stories</category>
+		<category>Embedded Integration</category>
+		<category>Enterprise MCP</category>
+		<guid isPermaLink="false">https://blog2workato.wpengine.com/?p=16712</guid>
+
+					<description>&lt;p&gt;Red Hat and Lenovo took unscripted questions at WOW Las Vegas 2026 and landed on the same advice: partner for the plumbing, govern it tightly, and get moving. At WOW: World of Workato in Las Vegas, two customers from the main stage took open questions with no slides and no script: Sherry Gentry-Gasper, Sr. Director, [&amp;#8230;]&lt;/p&gt;
+&lt;p&gt;The post &lt;a href="https://www.workato.com/the-connector/wow-2026-red-hat-lenovo-enterprise-ai-lessons/"&gt;Red Hat and Lenovo on What to Build and What to Buy&lt;/a&gt; appeared first on &lt;a href="https://www.workato.com/the-connector"&gt;Workato&lt;/a&gt;.&lt;/p&gt;
+</description>
+										<content:encoded>
+&lt;p class="wp-block-paragraph"&gt;&lt;em&gt;Red Hat and Lenovo took unscripted questions at WOW Las Vegas 2026 and landed on the same advice: partner for the plumbing, govern it tightly, and get moving.&lt;/em&gt;&lt;/p&gt;
+
+
+
+&lt;p class="wp-block-paragraph"&gt;At &lt;a href="https://mktg.workato.com/wow-2026-recap" target="_blank" rel="noreferrer noopener"&gt;WOW: World of Workato&lt;/a&gt; in Las Vegas, two customers from the main stage took open questions with no slides and no script: &lt;a href="https://www.linkedin.com/in/sherry-gentry-gasper-a347b24/" target="_blank" rel="noreferrer noopener"&gt;Sherry Gentry-Gasper&lt;/a&gt;, Sr. Director, Enterprise Architecture &amp;amp; Delivery Acceleration at &lt;a href="https://www.redhat.com/en" target="_blank" rel="noreferrer noopener"&gt;Red Hat&lt;/a&gt;, and &lt;a href="https://www.linkedin.com/in/poojachaudhary85/" target="_blank" rel="noreferrer noopener"&gt;Pooja Sathe&lt;/a&gt;, Head of AI Ecosystem Partnerships at &lt;a href="https://www.lenovo.com/us/en/pc/" target="_blank" rel="noreferrer noopener"&gt;Lenovo&lt;/a&gt;. &lt;a href="https://www.linkedin.com/in/will-corkery-95a8666/" target="_blank" rel="noreferrer noopener"&gt;Will Corkery&lt;/a&gt;, CRO at Workato, moderated.&lt;/p&gt;
+
+
+
+&lt;p class="wp-block-paragraph"&gt;Lenovo is building an AI assistant, QIRA, that takes actions across the devices it ships to consumers and enterprises. Red Hat&amp;#8217;s team runs enterprise architecture and delivery acceleration, including the CI/CD pipelines behind its internal SaaS applications. While very different, their answers still converged.&lt;/p&gt;
+
+
+
+&lt;h2 class="wp-block-heading"&gt;&lt;strong&gt;Buy the plumbing, build what makes you different&lt;/strong&gt;&lt;/h2&gt;
+
+
+
+&lt;p class="wp-block-paragraph"&gt;Lenovo wanted its assistant to act across the apps people use every day, such as Gmail, Outlook, Slack, and YouTube. Pooja said the team weighed building in-house against partnering, and that Workato stood out for how well it understood the problem Lenovo was trying to solve rather than offering a cookie-cutter solution.&lt;/p&gt;
+
+
+
+&lt;p class="wp-block-paragraph"&gt;The consumer use case also meant Lenovo couldn&amp;#8217;t forecast consumption. Pooja said the Workato account team helped structure a deal around that uncertainty. Lenovo&amp;#8217;s own differentiator, she explained, is understanding context, not building connectors. So Lenovo built the infrastructure, including an MCP registry, and Workato helped it build, test, and register connectors at scale.&lt;/p&gt;
+
+
+
+&lt;p class="wp-block-paragraph"&gt;Red Hat reached the same conclusion from the other direction. Its internal integration platform had grown to about 2,500 Java endpoints, maintained by senior engineers. Sherry said those engineers should be solving business problems, not maintaining integrations. Build versus buy was her toughest internal conversation: Red Hat should build what solves real Red Hat customer problems, not routine tasks like generating a quote.&lt;/p&gt;
+
+
+
+&lt;h2 class="wp-block-heading"&gt;&lt;strong&gt;Least privilege is the test for enterprise MCP&lt;/strong&gt;&lt;/h2&gt;
+
+
+
+&lt;p class="wp-block-paragraph"&gt;Sherry was candid about what she would do differently on day one: spend less time comparing native SaaS MCPs with Workato. Her team follows least privilege and least access, and in her experience many native MCPs were all-or-nothing. Red Hat has since made an architectural decision that its operational &lt;a href="https://www.workato.com/agentic/mcp" target="_blank" rel="noreferrer noopener"&gt;MCPs will come from Workato&lt;/a&gt;.&lt;/p&gt;
+
+
+
+&lt;p class="wp-block-paragraph"&gt;Her example: an agent that can touch four fields on a quote is a different risk from one that can write back to an entire Salesforce instance. Red Hat&amp;#8217;s distinguished engineers tested the platform against requirements like token exchange and session handling before the business got access.&lt;/p&gt;
+
+
+
+&lt;h2 class="wp-block-heading"&gt;&lt;strong&gt;Speed comes from fewer dependencies and more builders&lt;/strong&gt;&lt;/h2&gt;
+
+
+
+&lt;p class="wp-block-paragraph"&gt;Red Hat has about 300 builders, roughly 40% outside IT and engineering. Sherry credited three things:&lt;/p&gt;
+
+
+
+&lt;ul class="wp-block-list"&gt;
+&lt;li&gt;&lt;strong&gt;Repeatable patterns.&lt;/strong&gt; Everything is templatized, so anything committed stays within guardrails.&lt;/li&gt;
+
+
+
+&lt;li&gt;&lt;strong&gt;Fewer dependencies.&lt;/strong&gt; Teams are organized to minimize handoffs, with federated architects embedded in each and enterprise architects aligned to value streams. Work that writes PII or financial data gets a higher risk rating and architecture review. Read-only dashboards do not.&lt;/li&gt;
+
+
+
+&lt;li&gt;&lt;strong&gt;Deliberate enablement.&lt;/strong&gt; Each of 52 product teams nominated someone for learning days and certification competitions, with prizes. Red Hat spent about six months hardening observability, alerting, and logging first.&lt;/li&gt;
+&lt;/ul&gt;
+
+
+
+&lt;p class="wp-block-paragraph"&gt;The cultural shift mattered too. A centralized integration team had become the bottleneck, and Sherry said engineers let go of writing every integration once they saw what the speed meant for the business. Her bar:&lt;/p&gt;
+
+
+
+&lt;blockquote class="wp-block-quote is-layout-flow wp-block-quote-is-layout-flow"&gt;
+&lt;p class="wp-block-paragraph"&gt;&amp;#8220;An integration should never be the slowest part of your solution.&amp;#8221; &lt;/p&gt;
+
+
+
+&lt;p class="wp-block-paragraph"&gt;— &lt;strong&gt;Sherry Gentry-Gasper, Sr. Director, Enterprise Architecture &amp;amp; Delivery Acceleration, Red Hat&lt;/strong&gt;&lt;/p&gt;
+&lt;/blockquote&gt;
+
+
+
+&lt;p class="wp-block-paragraph"&gt;Lenovo is attacking the same problem from the compliance side. Pooja described a &amp;#8220;shift left&amp;#8221; approach that starts security and responsible AI reviews when a feature is defined, not at the end.&lt;/p&gt;
+
+
+
+&lt;h2 class="wp-block-heading"&gt;&lt;strong&gt;Keep humans where judgment lives&lt;/strong&gt;&lt;/h2&gt;
+
+
+
+&lt;p class="wp-block-paragraph"&gt;Asked where to draw the line on automation, both speakers pointed to people. Sherry said the workforce is anxious about keeping up, and that forcing everyone to use AI for everything would backfire. Longtime employees hold context that isn&amp;#8217;t written down.&lt;/p&gt;
+
+
+
+&lt;blockquote class="wp-block-quote is-layout-flow wp-block-quote-is-layout-flow"&gt;
+&lt;p class="wp-block-paragraph"&gt;&amp;#8220;If we lose those people, AI doesn&amp;#8217;t have that context.&amp;#8221; &lt;/p&gt;
+
+
+
+&lt;p class="wp-block-paragraph"&gt;— &lt;strong&gt;Sherry Gentry-Gasper, Sr. Director, Enterprise Architecture &amp;amp; Delivery Acceleration, Red Hat&lt;/strong&gt;&lt;/p&gt;
+&lt;/blockquote&gt;
+
+
+
+&lt;p class="wp-block-paragraph"&gt;Pooja added that AI can create more work than it saves when no one understands the output, so teams need judgment about when and how much to rely on it. Red Hat keeps humans in the loop where empathy and reasoning are needed, and tries to place review only where it adds value.&lt;/p&gt;
+
+
+
+&lt;h2 class="wp-block-heading"&gt;&lt;strong&gt;Start now, and expect to get some things wrong&lt;/strong&gt;&lt;/h2&gt;
+
+
+
+&lt;p class="wp-block-paragraph"&gt;Both closed with the same advice.&lt;/p&gt;
+
+
+
+&lt;blockquote class="wp-block-quote is-layout-flow wp-block-quote-is-layout-flow"&gt;
+&lt;p class="wp-block-paragraph"&gt;&amp;#8220;Mistakes are fine. Risks are fine. So I would just say start and experiment quickly.&amp;#8221;&lt;/p&gt;
+
+
+
+&lt;p class="wp-block-paragraph"&gt;— &lt;strong&gt;Pooja Sathe, Head of AI Ecosystem Partnerships, Lenovo&lt;/strong&gt;&lt;/p&gt;
+&lt;/blockquote&gt;
+
+
+
+&lt;p class="wp-block-paragraph"&gt;Sherry said that waiting to perfect the framework and KPIs would have cost six months. Red Hat instead ships a release 1.0, measures adoption, and retires what nobody uses.&lt;/p&gt;
+
+
+
+&lt;p class="wp-block-paragraph"&gt;Next for Lenovo: a marketplace of connectors, agents, and skills for people using its devices, and a path into enterprise devices. Sherry wants enterprise architecture to be known as an accelerator of delivery, with pre-built, secure MCPs as the architecture runway.&lt;/p&gt;
+
+
+
+&lt;h2 class="wp-block-heading"&gt;&lt;strong&gt;The takeaway&lt;/strong&gt;&lt;/h2&gt;
+
+
+
+&lt;p class="wp-block-paragraph"&gt;The advice from both customers is practical: partner where you aren&amp;#8217;t differentiated, insist on least-privilege access, design teams around fewer dependencies, and protect the human judgment AI can&amp;#8217;t replace. Then start.&lt;/p&gt;
+
+
+
+&lt;p class="has-color-mutted-blue-background-color has-background wp-block-paragraph"&gt;&lt;strong&gt;The future of work is being planned at World of Workato. &lt;a href="https://www.workato.com/events/wow" target="_blank" rel="noopener"&gt;Save the date for WOW 2027.&lt;/a&gt;&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;The post &lt;a href="https://www.workato.com/the-connector/wow-2026-red-hat-lenovo-enterprise-ai-lessons/"&gt;Red Hat and Lenovo on What to Build and What to Buy&lt;/a&gt; appeared first on &lt;a href="https://www.workato.com/the-connector"&gt;Workato&lt;/a&gt;.&lt;/p&gt;
+</content:encoded>
+					
+		
+		
+			</item>
+		</channel>
+</rss>

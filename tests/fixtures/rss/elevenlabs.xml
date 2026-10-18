@@ -1,0 +1,36 @@
+<?xml version='1.0' encoding='utf-8'?>
+<rss xmlns:atom="http://www.w3.org/2005/Atom" xmlns:dc="http://purl.org/dc/elements/1.1/" version="2.0">
+  <channel>
+    <title>ElevenLabs Blog</title>
+    <link>https://elevenlabs.io/blog</link>
+    <description>Read the latest research, product, and company updates from ElevenLabs - provider of the most realistic and versatile AI audio tools</description>
+    <language>en</language>
+    <lastBuildDate>Fri, 16 Oct 2026 21:13:19 GMT</lastBuildDate>
+    <atom:link href="https://elevenlabs.io/blog/rss.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>AI voice agent integrations: CRM and help desk guide</title>
+      <link>https://elevenlabs.io/blog/ai-voice-agent-integrations</link>
+      <guid isPermaLink="true">https://elevenlabs.io/blog/ai-voice-agent-integrations</guid>
+      <pubDate>Fri, 16 Oct 2026 12:00:00 GMT</pubDate>
+      <description>Learn about AI voice agent integrations with Salesforce, HubSpot, Zendesk, and more. Discover how agents read and update records mid-call and set up tools.</description>
+      <category>Resources</category>
+      <dc:creator>Jack Limebear</dc:creator>
+    </item>
+    <item>
+      <title>ElevenLabs’ commitment to security, privacy, and responsible AI: certified and renewed</title>
+      <link>https://elevenlabs.io/blog/certification-renewals</link>
+      <guid isPermaLink="true">https://elevenlabs.io/blog/certification-renewals</guid>
+      <pubDate>Fri, 16 Oct 2026 12:00:00 GMT</pubDate>
+      <description>ElevenLabs renewed its ISO, SOC 2, and PCI DSS certifications and added SOC 2 Type I and FedRAMP 20x Class A for enterprise trust.</description>
+      <category>Company</category>
+    </item>
+    <item>
+      <title>NTT Docomo Business trials conversational AI in Aizuwakamatsu with ElevenLabs</title>
+      <link>https://elevenlabs.io/blog/ntt-docomo-conversational-ai</link>
+      <guid isPermaLink="true">https://elevenlabs.io/blog/ntt-docomo-conversational-ai</guid>
+      <pubDate>Fri, 16 Oct 2026 12:00:00 GMT</pubDate>
+      <description>NTT Docomo Business is piloting an ElevenAgents voice platform in Fukushima to support older residents with natural Japanese speech. (137 characters)</description>
+      <category>Customer Stories</category>
+    </item>
+    </channel>
+</rss>

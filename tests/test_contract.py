@@ -28,6 +28,7 @@ the signal to delete the marker and promote the assertion into the contract.
 from __future__ import annotations
 
 import json
+import os
 import re
 import unittest
 from datetime import date
@@ -43,7 +44,16 @@ def _data_file(name: str) -> Path:
     Phase 0/1 keep the files at the repo root (the live page fetches
     ``./data.json``).  The planned Phase 2 layout moves them under ``data/``.
     Both locations are supported so the move cannot silently disable the suite.
+
+    ``AIIDASH_DATA_DIR`` points the suite at a candidate build instead -- used to
+    validate generated output before it is published.
     """
+    override = os.environ.get("AIIDASH_DATA_DIR")
+    if override:
+        candidate = Path(override) / name
+        if candidate.exists():
+            return candidate
+        raise FileNotFoundError(f"AIIDASH_DATA_DIR set but {candidate} is missing")
     for candidate in (REPO_ROOT / "data" / name, REPO_ROOT / name):
         if candidate.exists():
             return candidate
@@ -79,6 +89,7 @@ REQUIRED_COMPANY_KEYS = {
     "confidence": str,
     "lat": (int, float),
     "lng": (int, float),
+    "is_public": bool,
     "funding": dict,
     "latest_news": list,
     "sources": list,
@@ -120,10 +131,15 @@ MAX_NEWS_PER_COMPANY = 10
 # already prefers that field, so these tests survive the migration.
 PUBLIC_COMPANIES_FALLBACK = {"ServiceNow", "Snowflake", "DataDog", "AvePoint"}
 
-# Known upstream deviations, tolerated but not allowed to grow.
-KNOWN_SLUG_DEVIATIONS = {"cursor---anysphere"}  # from "Cursor / Anysphere"
-KNOWN_MISSING_ARR_KEY = {"xAI"}  # every other company carries the key (null = undisclosed)
-KNOWN_NON_YEAR_FOUNDED = {"Enigma AI Labs"}
+# Registries of tolerated upstream deviations.  The Phase 1 pipeline fixed all
+# three, so they are empty; they exist so any *new* deviation fails the suite.
+KNOWN_SLUG_DEVIATIONS: set[str] = set()
+KNOWN_MISSING_ARR_KEY: set[str] = set()
+KNOWN_NON_YEAR_FOUNDED: set[str] = set()
+
+#: Internal fields the pipeline drops on write.  They appeared once or twice
+#: upstream and were read by nothing.
+RETIRED_INTERNAL_FIELDS = ("_refresh_note", "_founders")
 
 SLUG_RE = re.compile(r"[a-z0-9]+(?:-[a-z0-9]+)*")
 ISO_DATE_RE = re.compile(r"\d{4}-\d{2}-\d{2}")
@@ -402,6 +418,37 @@ class DatasetShapeContract(unittest.TestCase):
                     self.assertIsNotNone(parse_iso_date(item["date"]), f"bad news date {item['date']!r}")
                     self.assertRegex(item["source"], r"^https?://[^\s]+$")
 
+    def test_news_is_sorted_newest_first(self):
+        for company in self.companies:
+            dates = [item["date"] for item in company["latest_news"]]
+            with self.subTest(company=company["name"]):
+                self.assertEqual(dates, sorted(dates, reverse=True), "news not newest-first")
+
+    def test_news_carries_publisher_metadata(self):
+        for company in self.companies:
+            for item in company["latest_news"]:
+                with self.subTest(company=company["name"], headline=item["headline"][:40]):
+                    for key in ("source_name", "feed"):
+                        self.assertIn(key, item)
+                        self.assertIsInstance(item[key], str)
+
+    def test_retired_internal_fields_are_absent(self):
+        for company in self.companies:
+            for field in RETIRED_INTERNAL_FIELDS:
+                with self.subTest(company=company["name"], field=field):
+                    self.assertNotIn(field, company, f"{field} should no longer be published")
+
+    def test_public_flag_agrees_with_the_valuation_field(self):
+        for company in self.companies:
+            funding = company["funding"]
+            with self.subTest(company=company["name"]):
+                has_cap = as_number(funding.get("current_market_cap_usd")) is not None
+                self.assertEqual(
+                    company["is_public"],
+                    has_cap,
+                    "is_public must match whether a market cap is present",
+                )
+
     def test_sources_block_shape(self):
         for company in self.companies:
             for source in company["sources"]:
@@ -526,31 +573,27 @@ class GoldenSnapshotContract(unittest.TestCase):
 
 
 class KnownIssues(unittest.TestCase):
-    """Defects recorded during the takeover, tracked until Phase 1 fixes them."""
+    """Regression guards for defects found during the takeover.
+
+    All five were fixed by the Phase 1 pipeline, so these now assert the fixed
+    behaviour directly rather than being marked expected-failure.
+    """
 
     @classmethod
     def setUpClass(cls):
         cls.companies = load_data()
 
-    @unittest.expectedFailure
     def test_news_is_sorted_newest_first(self):
-        """29/40 companies store latest_news out of order.
-
-        The global timeline sorts before rendering, but per-company detail
-        sections and the modal render the stored order, so the newest headline
-        can appear mid-list.
-        """
+        """Upstream stored latest_news out of order for 29/40 companies."""
         unsorted = [
             company["name"]
             for company in self.companies
             if [item["date"] for item in company["latest_news"]]
             != sorted((item["date"] for item in company["latest_news"]), reverse=True)
         ]
-        self.assertEqual(unsorted, [], f"{len(unsorted)} companies have unsorted news")
+        self.assertEqual(unsorted, [])
 
-    @unittest.expectedFailure
     def test_founded_is_a_bare_year(self):
-        """'Enigma AI Labs' has founded == '2025-01' instead of a year."""
         offenders = {
             company["name"]
             for company in self.companies
@@ -558,23 +601,14 @@ class KnownIssues(unittest.TestCase):
         }
         self.assertEqual(offenders, set())
 
-    @unittest.expectedFailure
     def test_every_company_has_an_arr_key(self):
-        """'xAI' omits the arr_usd key entirely; the other 39 carry it (null = undisclosed)."""
         missing = {company["name"] for company in self.companies if "arr_usd" not in company}
         self.assertEqual(missing, set())
 
-    @unittest.expectedFailure
     def test_no_known_typo_display_names(self):
-        """'A21 Labs' should be 'AI21 Labs' (website and intro both say AI21)."""
         names = {company["name"] for company in self.companies}
         self.assertNotIn("A21 Labs", names)
-
-    @unittest.expectedFailure
-    def test_refresh_note_is_populated_for_all_companies(self):
-        """_refresh_note is stamped on 1/40 companies; the field is vestigial."""
-        stamped = [company for company in self.companies if "_refresh_note" in company]
-        self.assertEqual(len(stamped), len(self.companies))
+        self.assertIn("AI21 Labs", names)
 
 
 if __name__ == "__main__":

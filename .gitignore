@@ -17,3 +17,9 @@ Thumbs.db
 # Pipeline artifacts
 *.log
 .cache/
+
+# Fetch cache and the per-run funding review queue.
+# The queue is regenerated on every run; Phase 3 attaches it to the workflow
+# run as an artifact rather than committing it.
+pipeline/.cache/
+pipeline/review/

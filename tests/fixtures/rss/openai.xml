@@ -1,0 +1,39 @@
+<?xml version='1.0' encoding='utf-8'?>
+<rss xmlns:atom="http://www.w3.org/2005/Atom" version="2.0">
+    <channel>
+        <title>OpenAI News</title>
+        <description>The OpenAI blog</description>
+        <link>https://openai.com/news</link>
+        <image>
+            <url>https://openai.com/apple-icon.png</url>
+            <title>OpenAI News</title>
+            <link>https://openai.com/news</link>
+        </image>
+        <generator>OpenAI</generator>
+        <lastBuildDate>Sun, 18 Oct 2026 13:25:57 GMT</lastBuildDate>
+        <atom:link href="https://openai.com/news/rss.xml" rel="self" type="application/rss+xml" />
+        <language>en-US</language>
+        <item>
+            <title>How Itaú is building generative AI for its entire customer base</title>
+            <description>With ia.i, a conversational interface, and the IARA governance platform, Itaú is applying its AI First strategy to customers and employees — in one of Brazil’s most regulated sectors.</description>
+            <link>https://openai.com/index/itau-generative-ai</link>
+            <guid isPermaLink="true">https://openai.com/index/itau-generative-ai</guid>
+            <pubDate>Fri, 16 Oct 2026 19:00:00 GMT</pubDate>
+        </item>
+        <item>
+            <title>Benefit Street Partners answers questions faster with Codex</title>
+            <description>Anant Kumar builds tools to compare loan valuations and analyze credit agreements, using Codex for code review and faster follow-ups.</description>
+            <link>https://openai.com/index/benefit-street-partners</link>
+            <guid isPermaLink="true">https://openai.com/index/benefit-street-partners</guid>
+            <pubDate>Fri, 16 Oct 2026 00:00:00 GMT</pubDate>
+        </item>
+        <item>
+            <title>Stack Overflow for Agents triples signups with ChatGPT plugin</title>
+            <description>Two engineers shipped Stack Overflow for Agents in a few weeks with Codex, and its ChatGPT plugin helped drive up to 10× growth in agent creation.</description>
+            <link>https://openai.com/index/stack-overflow-chatgpt-plugin</link>
+            <guid isPermaLink="true">https://openai.com/index/stack-overflow-chatgpt-plugin</guid>
+            <category>Startup</category>
+            <pubDate>Fri, 16 Oct 2026 00:00:00 GMT</pubDate>
+        </item>
+        </channel>
+</rss>

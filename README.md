@@ -62,6 +62,7 @@ python -m pipeline.refresh --check               # exit 1 if files would change
 python -m pipeline.refresh --only "AI21 Labs"    # one company
 python -m pipeline.refresh --offline             # cache only, never the network
 python -m pipeline.refresh --apply-funding       # opt in to numeric auto-apply
+python -m pipeline.refresh --only Enigma --reset-news   # rebuild one company's news
 python -m pipeline.seed --check                  # verify the seed is in sync
 ```
 
@@ -73,11 +74,23 @@ Behaviour worth knowing:
 - **Feeds**: a Google News query per company plus verified official/PR feeds
   (OpenAI, Google DeepMind, Databricks, Snowflake, ElevenLabs, Workato). Most
   tracked companies publish no feed; coverage is deliberately partial rather
-  than guessed. Queries are tuned where a bare name matches unrelated news
-  (`Snowflake` was surfacing an Arizona police blotter).
+  than guessed.
+- **Relevance is opt-in per company.** Google News honours a query loosely, so
+  `MATCH_TERMS` / `EXCLUDE_TERMS` in `pipeline/seed.py` pin down the companies
+  that need it (currently Enigma). Companies without terms are unfiltered, so
+  nothing is silently dropped for a company nobody has tuned. A match term
+  costs recall — keep it to the company's own name.
 - **Funding candidates are detected and queued, never written by default.**
   `--apply-funding` opts in, and even then only high-confidence priced rounds
   (Seed / Series A-K) apply — and at most one per company per run.
+- **`--only` refreshes a subset; it never publishes a subset.** Companies outside
+  the selection are carried through untouched, so a partial run cannot shrink
+  `data.json` (a regression test covers this).
+- **`--reset-news`** ignores stored history for the selected companies, for use
+  after changing a news query.
+- **Renames keep their archive.** A correction that changes `_id` records the old
+  value in `previous_ids`, and the refresh follows it instead of silently
+  starting that company's news from scratch.
 - **No-op runs write nothing.** Change detection ignores the `last_updated`
   heartbeat, so a run with no new information does not touch either file.
   Writes are atomic, so a reader never sees a half-written `data.json`.
@@ -140,10 +153,15 @@ build so generated output can be validated before publishing.
 
 ## Open questions
 
-- `Enigma AI Labs` (website `enigma.inc`, a robotics lab) carries the `_id`
-  `enigma-aerospace`. Renaming either would break existing deep links, and the
-  data does not say which is authoritative — left alone deliberately. See
-  `KNOWN_ID_MISMATCHES` in `pipeline/seed.py`.
+- **News relevance is poor for several companies and needs curation.** A survey
+  of the published data found off-topic items in roughly 25 of 40 companies.
+  Clear cases: Openmind Research Institute is collecting a Broadway actor named
+  Richard Sutton; Workato is collecting generic "AI automation" listicles; xAI
+  items are about Grok, and Safe Superintelligence about SSI, so a naive
+  name-match flags them wrongly. The mechanism to fix this exists
+  (`MATCH_TERMS` / `EXCLUDE_TERMS`), but choosing terms per company needs
+  judgement, and a crude bulk heuristic would silently drop real news. Only
+  Enigma has been tuned so far.
 - Google News no longer redirects to the publisher, so its "canonical URL" is
   behind an obfuscated JS call. Items keep the Google permalink (which works in
   a browser) and carry the publisher's name and homepage from the feed's

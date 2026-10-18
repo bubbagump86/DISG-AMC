@@ -2555,7 +2555,7 @@
     "is_public": false
   },
   {
-    "name": "Enigma AI Labs",
+    "name": "Enigma",
     "category": "AI Infrastructure",
     "website": "https://enigma.inc",
     "founded": "2025",
@@ -2577,49 +2577,94 @@
     },
     "latest_news": [
       {
+        "date": "2026-08-18",
+        "headline": "Physical AI startup Enigma raises $71M seed to make robots easy to use - Dealroom",
+        "summary": "Physical AI startup Enigma raises $71M seed to make robots easy to use Dealroom",
+        "source": "https://news.google.com/rss/articles/CBMipgFBVV95cUxQOXRaZzc5UlVLblMzeDExb1E2RzU0bmJwd2JVWG9PclZvenRzLWIzZVdUVXhBNVhaLV8yOVdQbkNTQmJIN3JmLVdRaWF4bFUwb1hpVHh5S25HeVNGb0lsdFFHa1dKdGZxUWRqUWQ5b0V6d0FsQU5RWW9nTDllZ2V6MUpZS2lUR1VDOXU1NGo3bjBvYVlHLTlTQWt3ZzF5eGZhNV9aNmJ3?oc=5",
+        "source_name": "Dealroom",
+        "source_url": "https://app.dealroom.co",
+        "feed": "Google News"
+      },
+      {
+        "date": "2026-07-31",
+        "headline": "Enigma Raises $71 Million Seed Round And Puts The World’s First Interactive AI Robots Online - Pulse 2.0",
+        "summary": "Enigma Raises $71 Million Seed Round And Puts The World’s First Interactive AI Robots Online Pulse 2.0",
+        "source": "https://news.google.com/rss/articles/CBMirwFBVV95cUxNVXpEc0Y2RnVaNU9GZm5ZMmdoRTZEWHJTazBvS04zeEhyRy1OR0tRLW15UjlDRmJvSG0wTmxEdVE0QThNOWE4aDZTZVFOekdRVENMd2NYQk9SdlBhblZaVlJhaHlCVWRhc0FMOWN5TTVUNVNvVUZ4dWw3N0VrX0JEdWFhVFNOOXJ0VjFyUWs2amNCVEE3UTBpNkhIMUxIRWRXVk1fQ3FicGFFNkozemc00gG0AUFVX3lxTE1GTU9NWWRCcnB3c1hsNk04Vm84dXBYV2hXNHlGTGJERk5sSXlFLS0zY2d5RlY4Y2FJSXZ3SDlQMjZIaWhjVXlub0VzcWQ5MFI2eWs1VklSbTlZaDhSYXlzcW9Nd1dCRmhJZUtJOWQzQkxYQ1FpSEJiMzRObkhLdWk4QzFxNVhkazZqZ1NzeGZGaTFWX1piVm94LXZnS0I2ejA1OUk0VmRwUDZZUzU4NjJRNXJ2bA?oc=5",
+        "source_name": "Pulse 2.0",
+        "source_url": "https://pulse2.com",
+        "feed": "Google News"
+      },
+      {
+        "date": "2026-07-28",
+        "headline": "Enigma Raises $70 Million to Simplify Robot Control - Equitypandit",
+        "summary": "Enigma Raises $70 Million to Simplify Robot Control Equitypandit",
+        "source": "https://news.google.com/rss/articles/CBMihwFBVV95cUxOeHVnODIya1BnWURBWWZ3c0tzdjJERTNsalp3b1Z3X0Z1aHQ4NXRIZE9hWHFUQnNWa0J1Q3JNNG9DaEZudW1ydVFTSVNxRS14RE1PUUIzdWk3OWJvbFI3ZW50V3BXVktfTG16a1hWZ3ZjNnJkOU5NblFVaHJpdVFPUU1KWmd4WTQ?oc=5",
+        "source_name": "Equitypandit",
+        "source_url": "https://www.equitypandit.com",
+        "feed": "Google News"
+      },
+      {
+        "date": "2026-07-28",
+        "headline": "Enigma Raised $71M on a Thesis: Robot Interfaces, Not Raw AI, Are the Adoption Bottleneck - Tech Times",
+        "summary": "Enigma Raised $71M on a Thesis: Robot Interfaces, Not Raw AI, Are the Adoption Bottleneck Tech Times",
+        "source": "https://news.google.com/rss/articles/CBMiywFBVV95cUxQOFBfemRuOHZ0VjMyUUk1T2ZoMGZ1WTN4R204VXEyV0d3cEtSbjVaUVpncGdYYkFySFVEbk5vLUdkUFhnRFV5RDQzNEJqamNUYk5VdnlWc2Yxd1V2aE1CTXBHekxjMndudmlGanlyb1dicFlYeGhrdEM2d0pnSHNJN01JVDdMWHNhb0UtSEpOTllRZzJXcXEzakNMLVE1NktndVYxai1vdGY2R19MQTRvWVNyWEVVdmVIaTlvZWdHVG5VSVg1MEZyTl93dw?oc=5",
+        "source_name": "Tech Times",
+        "source_url": "https://www.techtimes.com",
+        "feed": "Google News"
+      },
+      {
         "date": "2026-07-27",
         "headline": "Enigma raises $71M to make controlling a robot as easy as adjusting the volume - TechCrunch",
-        "summary": "Enigma raised a $71M seed round led by Index Ventures and Ribbit Capital, with participation from Conviction Partners. The Israeli robotics lab is putting 100+ AI-powered robots online to study natural human-robot communication.",
-        "source": "https://techcrunch.com/2026/07/27/enigma-raises-70m-to-make-controlling-a-robot-as-easy-as-adjusting-the-volume/",
+        "summary": "Enigma raises $71M to make controlling a robot as easy as adjusting the volume TechCrunch",
+        "source": "https://news.google.com/rss/articles/CBMisgFBVV95cUxQSnNERUE3ZUlwdlZwNHVuZzVBVkE2alZHTGIyRUJWNEtsMndDV2lSWGxNMUoxS3lURXE4VlNGREpURWhUc3dzSkZYWFNQNU94eDNGOHNXVFVldVRtWjVwcTBJdEMyNWZMWTFndXlIMl9CdnNRTWNCd1owZmxUZUN3WThGdWJidHc3am1RNzlmZ0lMWlRHWGd3cmxwM19hQXFYOEdqNnJFSDhQN1N2QmxQdXNn?oc=5",
         "source_name": "TechCrunch",
-        "source_url": "",
-        "feed": "archive"
+        "source_url": "https://techcrunch.com",
+        "feed": "Google News"
       },
       {
         "date": "2026-07-27",
-        "headline": "Israeli AI robotics startup Enigma emerges from stealth with $71 million Seed round - Calcalist",
-        "summary": "Founded by former Unit 8200 researchers Jonathan Jacobi (CEO) and Gal Niv (CTO), Enigma is developing foundation AI models for robots. One of the largest seed rounds in Israeli startup history.",
-        "source": "https://www.calcalistech.com/ctechnews/article/h1tdxjhrgx",
-        "source_name": "Calcalist",
-        "source_url": "",
-        "feed": "archive"
+        "headline": "Israeli AI robotics startup Enigma emerges from stealth with $71 million Seed round - CTech",
+        "summary": "Israeli AI robotics startup Enigma emerges from stealth with $71 million Seed round CTech",
+        "source": "https://news.google.com/rss/articles/CBMiaEFVX3lxTE02elZVdk1Iczl5UzdTQldJWkxvTWxIejI0dll0ZFhoR0NPR0swUENTdW03b0hlR21sZHJRVUZ1M2xtSzdGQXkzc19VV1lBZWF3TlFKZHNNTEdBTi11d0lHT0txcmhUQmFw?oc=5",
+        "source_name": "CTech",
+        "source_url": "https://www.calcalistech.com",
+        "feed": "Google News"
       },
       {
         "date": "2026-07-27",
-        "headline": "Index Ventures led Israeli AI startup Enigma's $71m seed - Tech in Asia",
-        "summary": "Israel-based Enigma raised US$71M seed led by Index Ventures and Ribbit Capital. Plans to use funding to expand AI research team, GPU capacity, and accelerate robotics software platform development.",
-        "source": "https://www.techinasia.com/news/index-ventures-led-israeli-ai-startup-enigmas-71m-seed",
-        "source_name": "Tech in Asia",
-        "source_url": "",
-        "feed": "archive"
+        "headline": "Enigma Lands $70M Seed to Democratize Robot Control - The Tech Buzz",
+        "summary": "Enigma Lands $70M Seed to Democratize Robot Control The Tech Buzz",
+        "source": "https://news.google.com/rss/articles/CBMiiwFBVV95cUxQX0FJak9FTmVwOW1OM2JIcUMxVkNRWmNPTU9hRThTMzBxZG9qejNxR0NKZ0tPX1F3MFVkNHhDT01tVXpfOFVpU1pyaFVXT2hZeTdmU2lrNEhaRU44OFl3ckRreG9Sa1BXN0FFWWpFdjlBUll5Qmk2dDZCNDQ2S1pyWC05UTk4SXZtT0N3?oc=5",
+        "source_name": "The Tech Buzz",
+        "source_url": "https://www.techbuzz.ai",
+        "feed": "Google News"
       },
       {
         "date": "2026-07-27",
-        "headline": "He joined Check Point at 16. Now Jonathan Jacobi has raised one of Israel's biggest seed rounds to build the AI brain for robots - Calcalist",
-        "summary": "The 26-year-old Enigma co-founder, who became the youngest employee in Microsoft and Check Point history, raised $71M to develop AI models and software for adaptable, intelligent robots.",
-        "source": "https://www.calcalistech.com/ctechnews/article/b4pza8b1l",
-        "source_name": "Calcalist",
-        "source_url": "",
-        "feed": "archive"
+        "headline": "Enigma raises $71M to develop foundation models for robots - SiliconANGLE",
+        "summary": "Enigma raises $71M to develop foundation models for robots SiliconANGLE",
+        "source": "https://news.google.com/rss/articles/CBMikAFBVV95cUxNTlRfcXhzSDl3TkV0ODFZT1RfcU5uNkZfZlZNYTFfeGFPbDRfNEtTNHplcnoweXZxbFYxSDdjMlR0eDQzTlFfMEh6bkZWS2hRNE9CdUM5MHZMWVplSER2TFN3VnF2SWhvLWZ0RVFHSVF2RkIzNndnRVBMVHlEWEVUU0tXQXBfVkZWLThhTG5iSFM?oc=5",
+        "source_name": "SiliconANGLE",
+        "source_url": "https://siliconangle.com",
+        "feed": "Google News"
       },
       {
         "date": "2026-07-27",
-        "headline": "Enigma Raises $71 Million to Explore a New Kind of Robotic Intelligence - SME Business Review",
-        "summary": "The Israeli startup is putting more than 100 AI-powered robots online to study how people naturally communicate with machines. Funding will support research and engineering team expansion.",
-        "source": "https://smebusinessreview.com/robotics/enigma-71-million-explore-robotic-intelligence",
-        "source_name": "SME Business Review",
-        "source_url": "",
-        "feed": "archive"
+        "headline": "Enigma emerges from stealth with $71 million to build the intelligence layer for every robot on earth - Startup Fortune",
+        "summary": "Enigma emerges from stealth with $71 million to build the intelligence layer for every robot on earth Startup Fortune",
+        "source": "https://news.google.com/rss/articles/CBMixwFBVV95cUxOQ3hRTUxZYUtXVFVEX1FSX05USDJtQ0ZvTFFaajlybEI3V0NaMTVGd3VfWm1TeldZcmtuTExENEFsMTRTUzMxZmZIZlNkOFptZ3I4MGItQ2NNUXc4bV9uSi1ENU9acEM1YXhqc1R1eDExeEkxRGwyNko2VGxtbHp4SDRacGNzNjJKZ2dSVmlWX1ZXanB2Y3BLRC1tNmNDcDhST3VPM2ZBWm1sc3E4TEhidFJSU2p5YVlwWlh0XzItb0UwX3VsNGV3?oc=5",
+        "source_name": "Startup Fortune",
+        "source_url": "https://startupfortune.com",
+        "feed": "Google News"
+      },
+      {
+        "date": "2026-07-27",
+        "headline": "Enigma Raises $71M in Seed Funding to Develop AI Models for Training Robots - AI Insider",
+        "summary": "Enigma Raises $71M in Seed Funding to Develop AI Models for Training Robots AI Insider",
+        "source": "https://news.google.com/rss/articles/CBMisgFBVV95cUxQdFFxdkRPQzlQZURmOHkzVHZZSnQ0SVZZRFFIRmxTbURUeHgzMFlEVjl2YVc5dzFuSVJqMnhoSlA0NUI4bnR5b1JGZHJLbmlrS1lXellER2owc0ZtTVRGa3N5VHJaN2VWSVRBNlU1bTV1b0VVRVZRTUNHNWVYX2FnVzZ0VF83TVE2S09SSTJrRzJ3aHI0endJbzJtM0hPOHJWMlhSQ2ZQSHN5a3BxZGxQZXZ3?oc=5",
+        "source_name": "AI Insider",
+        "source_url": "https://theaiinsider.tech",
+        "feed": "Google News"
       }
     ],
     "sources": [
@@ -2640,7 +2685,7 @@
       }
     ],
     "confidence": "medium",
-    "_id": "enigma-aerospace",
+    "_id": "enigma",
     "lat": 32.0853,
     "lng": 34.7818,
     "arr_usd": null,

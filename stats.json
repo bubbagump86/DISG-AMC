@@ -1,7 +1,7 @@
 {
   "companies_tracked": 40,
   "categories": 10,
-  "news_items": 392,
+  "news_items": 397,
   "capital_raised": {
     "total_usd": 240481600000,
     "disclosed_count": 36,
@@ -24,6 +24,6 @@
     "public_count": 4,
     "note": "private = post_money_valuation_usd; public = current_market_cap_usd"
   },
-  "last_updated": "2026-10-18T14:12:10+00:00",
+  "last_updated": "2026-10-18T14:34:49+00:00",
   "as_of_date": "2026-10-18"
 }

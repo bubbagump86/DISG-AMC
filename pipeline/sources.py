@@ -155,6 +155,25 @@ def item_from_feed(feed_item: FeedItem, spec: FeedSpec) -> dict | None:
     }
 
 
+def relevance_ok(company: dict, headline: str) -> bool:
+    """Optional per-company relevance filter.
+
+    Google News honours a query loosely, so a company with a generic name can
+    collect unrelated stories.  ``match_terms`` (all must not be absent) and
+    ``exclude_terms`` let a human pin this down per company.
+
+    Both are opt-in: with no terms configured the headline is always kept, so
+    this never silently drops news for companies nobody has tuned.
+    """
+    text = (headline or "").lower()
+    if any(term.lower() in text for term in company.get("exclude_terms") or []):
+        return False
+    terms = company.get("match_terms") or []
+    if terms and not any(term.lower() in text for term in terms):
+        return False
+    return True
+
+
 def collect(
     company: dict,
     fetcher: Fetcher,
@@ -164,6 +183,7 @@ def collect(
 ) -> list[dict]:
     """Fetch and parse every configured feed for ``company``."""
     collected: list[dict] = []
+    dropped = 0
     for spec in feeds_for(company, defaults):
         try:
             body = fetcher.get(spec.url)
@@ -178,11 +198,17 @@ def collect(
         kept = 0
         for entry in entries:
             item = item_from_feed(entry, spec)
-            if item:
-                item["_type"] = spec.type
-                collected.append(item)
-                kept += 1
+            if not item:
+                continue
+            if not relevance_ok(company, item["headline"]):
+                dropped += 1
+                continue
+            item["_type"] = spec.type
+            collected.append(item)
+            kept += 1
         _log(log, f"  . {company['name']}: {spec.label} -> {kept} items")
+    if dropped:
+        _log(log, f"  ~ {company['name']}: dropped {dropped} irrelevant item(s)")
     return collected
 
 

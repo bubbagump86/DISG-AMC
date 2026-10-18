@@ -41,22 +41,24 @@ REFRESHED_FIELDS = ("latest_news",)
 DROPPED_FIELDS = ("_refresh_note", "_founders", "current_market_cap_usd")
 
 #: Corrections to upstream data, applied on every seed run so they cannot
-#: silently reappear.  Keyed by ``_id``.
+#: silently reappear.  Keyed by the upstream ``_id``.
 CORRECTIONS = {
     # "A21 Labs" is AI21 Labs -- the website, intro and _id all say so.
     "a21-labs": {"name": "AI21 Labs"},
     # Triple hyphen from "Cursor / Anysphere"; the frontend's own slug fallback
     # would have produced "cursor-anysphere".
     "cursor---anysphere": {"_id": "cursor-anysphere"},
-    # A month-precision value in a year field.
-    "enigma-aerospace": {"founded": "2025"},
+    # The company is Enigma (enigma.inc), a physical-AI robotics lab. Neither the
+    # old display name nor "enigma-aerospace" matched it. Confirmed by the user.
+    "enigma-aerospace": {"_id": "enigma", "name": "Enigma", "founded": "2025"},
 }
 
-#: Unresolved identity mismatches, deliberately left alone.  ``Enigma AI Labs``
-#: (website enigma.inc, a robotics lab) carries ``_id: "enigma-aerospace"``.
-#: Renaming either would break existing deep links, and which is authoritative
-#: is not knowable from the data -- needs a human decision.
-KNOWN_ID_MISMATCHES = {"enigma-aerospace": "Enigma AI Labs"}
+#: Identity corrections that ship as a rename.  When a correction changes ``_id``
+#: the old value is recorded in ``previous_ids`` so the refresh can still find
+#: that company's news history instead of silently dropping it.
+def previous_ids(upstream_id: str, correction: dict) -> list[str]:
+    new_id = correction.get("_id")
+    return [upstream_id] if new_id and new_id != upstream_id else []
 
 #: Verified official/PR feeds.  Each was fetched and confirmed to return
 #: well-formed XML with dated items before being added here.  Most tracked
@@ -71,6 +73,17 @@ OFFICIAL_FEEDS: dict[str, list[dict]] = {
     "Workato": [{"url": "https://www.workato.com/the-connector/feed/", "label": "Workato Blog", "type": "official"}],
 }
 
+#: Headline filters for companies whose feeds collect unrelated stories.
+#: Google News matches loosely: a quoted generic name still returns off-topic
+#: results ("Enigma" surfaced the cipher machine and a robotics competition).
+#: Opt-in per company -- anything not listed here is unfiltered, so news is
+#: never silently dropped for companies nobody has tuned.  Trade-off: a match
+#: term costs recall, so keep it to the company's own name where possible.
+MATCH_TERMS: dict[str, list[str]] = {
+    "Enigma": ["enigma"],
+}
+EXCLUDE_TERMS: dict[str, list[str]] = {}
+
 #: Google News queries for names that match unrelated things.
 #: A bare "Snowflake" surfaced a police blotter from Snowflake, Arizona.
 NEWS_QUERIES: dict[str, str] = {
@@ -80,6 +93,7 @@ NEWS_QUERIES: dict[str, str] = {
     "DataDog": '"Datadog"',
     "MiniMax": '"MiniMax AI"',
     "Prometheus": '"Prometheus" AI Bezos OR "Prometheus Project"',
+    "Enigma": '"Enigma" robotics',
     "Snowflake": '"Snowflake" AI data cloud',
     "Microsoft Research Asia (MSRA)": '"Microsoft Research Asia"',
     "Advanced Machine Intelligence (AMI)": '"Advanced Machine Intelligence" OR "AMI Labs"',
@@ -100,6 +114,9 @@ def build_config(companies: list[dict], *, source: str = "data.json") -> dict:
                 # is more consistent for it, and the contract test checks presence.
                 record[field] = None
         record.update(correction)
+        carried = previous_ids(company.get("_id", ""), correction)
+        if carried:
+            record["previous_ids"] = carried
 
         funding = {
             key: value
@@ -111,6 +128,10 @@ def build_config(companies: list[dict], *, source: str = "data.json") -> dict:
 
         if record["name"] in NEWS_QUERIES:
             record["news_query"] = NEWS_QUERIES[record["name"]]
+        if record["name"] in MATCH_TERMS:
+            record["match_terms"] = MATCH_TERMS[record["name"]]
+        if record["name"] in EXCLUDE_TERMS:
+            record["exclude_terms"] = EXCLUDE_TERMS[record["name"]]
         if record["name"] in OFFICIAL_FEEDS:
             record["feeds"] = OFFICIAL_FEEDS[record["name"]]
         seeded.append(record)
@@ -121,7 +142,8 @@ def build_config(companies: list[dict], *, source: str = "data.json") -> dict:
             "generated_from": source,
             "note": (
                 "Curated facts only. latest_news is refreshed by pipeline/refresh.py "
-                "and must never be edited here."
+                "and must never be edited here. previous_ids lists retired _id values "
+                "so history survives a rename."
             ),
             "dropped_fields": list(DROPPED_FIELDS),
         },

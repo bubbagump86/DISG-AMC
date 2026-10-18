@@ -2,7 +2,7 @@
   "_meta": {
     "schema": 1,
     "generated_from": "data.json",
-    "note": "Curated facts only. latest_news is refreshed by pipeline/refresh.py and must never be edited here.",
+    "note": "Curated facts only. latest_news is refreshed by pipeline/refresh.py and must never be edited here. previous_ids lists retired _id values so history survives a rename.",
     "dropped_fields": [
       "_refresh_note",
       "_founders",
@@ -880,8 +880,8 @@
       "is_public": false
     },
     {
-      "_id": "enigma-aerospace",
-      "name": "Enigma AI Labs",
+      "_id": "enigma",
+      "name": "Enigma",
       "category": "AI Infrastructure",
       "website": "https://enigma.inc",
       "founded": "2025",
@@ -923,7 +923,11 @@
         "total_raised_usd": 71000000,
         "source_note": "$71M seed, led by Index Ventures and Ribbit Capital, with participation from Conviction Partners. Notable individual investors include Assaf Rappaport (Wiz co-founder/CEO), Merav Bahat (Dazz founder) via Stardust, Sarah Guo, plus executives and researchers from OpenAI, Anthropic, Google DeepMind, xAI, Thinking Machines, Cognition, Factory, and Wiz. Source: TechCrunch, Calcalist, Tech in Asia (Jul 27, 2026)."
       },
-      "is_public": false
+      "is_public": false,
+      "news_query": "\"Enigma\" robotics",
+      "match_terms": [
+        "enigma"
+      ]
     },
     {
       "_id": "google-deepmind",

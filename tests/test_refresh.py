@@ -185,9 +185,61 @@ class RunTests(unittest.TestCase):
         self.assertTrue(beta["is_public"])
         self.assertEqual(beta["funding"]["current_market_cap_usd"], 50_000_000_000)
 
-    def test_only_filter(self):
-        report = refresh.run(make_config(), fetcher=StubFetcher(default_routes()), only=["Beta"])
-        self.assertEqual([record["_id"] for record in report.data], ["beta"])
+    def test_only_refreshes_a_subset_but_still_publishes_everything(self):
+        """A partial run must never shrink the published dataset."""
+        existing = [
+            {"_id": "alpha", "name": "Alpha", "latest_news": [
+                {"date": "2026-09-01", "headline": "Alpha archived", "summary": "s", "source": "https://x/a"},
+            ]},
+            {"_id": "beta", "name": "Beta", "latest_news": []},
+        ]
+        report = refresh.run(
+            make_config(), existing_data=existing,
+            fetcher=StubFetcher(default_routes()), only=["Beta"],
+        )
+        self.assertEqual([record["_id"] for record in report.data], ["alpha", "beta"])
+        alpha = report.data[0]
+        self.assertEqual([item["headline"] for item in alpha["latest_news"]], ["Alpha archived"],
+                         "unselected company is carried through untouched")
+
+    def test_reset_news_ignores_stored_history(self):
+        existing = [{"_id": "alpha", "latest_news": [
+            {"date": "2026-10-01", "headline": "Old Alpha news", "summary": "s",
+             "source": "https://news.google.com/rss/articles/OLD"},
+        ]}]
+        kept = refresh.run(make_config(), existing_data=existing, fetcher=StubFetcher(default_routes()))
+        self.assertIn("Old Alpha news", [i["headline"] for i in kept.data[0]["latest_news"]])
+
+        reset = refresh.run(make_config(), existing_data=existing,
+                            fetcher=StubFetcher(default_routes()), reset_news=True)
+        self.assertNotIn("Old Alpha news", [i["headline"] for i in reset.data[0]["latest_news"]])
+
+    def test_previous_ids_inherits_history_across_a_rename(self):
+        config = make_config()
+        config["companies"][0]["_id"] = "alpha-new"
+        config["companies"][0]["previous_ids"] = ["alpha"]
+        existing = [{"_id": "alpha", "latest_news": [
+            {"date": "2026-10-01", "headline": "Alpha archived", "summary": "s", "source": "https://x/old"},
+        ]}]
+        report = refresh.run(config, existing_data=existing, fetcher=StubFetcher(default_routes()))
+        headlines = [i["headline"] for i in report.data[0]["latest_news"]]
+        self.assertIn("Alpha archived", headlines, "history follows the rename")
+        self.assertNotIn("previous_ids", report.data[0], "internal field must not be published")
+
+    def test_relevance_filter_is_applied(self):
+        config = make_config()
+        config["companies"][0]["match_terms"] = ["alpha"]
+        routes = {
+            "Alpha": rss([
+                ("Alpha ships something - Reuters", "https://news.google.com/rss/articles/A", "Sat, 17 Oct 2026 10:00:00 GMT", "Reuters"),
+                ("Unrelated gardening tips - Reuters", "https://news.google.com/rss/articles/B", "Sat, 17 Oct 2026 11:00:00 GMT", "Reuters"),
+            ]),
+            "Beta": rss([("Beta quiet - Reuters", "https://news.google.com/rss/articles/C", "Thu, 16 Oct 2026 10:00:00 GMT", "Reuters")]),
+        }
+        report = refresh.run(config, fetcher=StubFetcher(routes))
+        headlines = [i["headline"] for i in report.data[0]["latest_news"]]
+        self.assertEqual(headlines, ["Alpha ships something - Reuters"])
+        self.assertNotIn("match_terms", report.data[0])
 
     def test_fetch_failure_is_recorded_and_does_not_abort(self):
         class Exploding(StubFetcher):

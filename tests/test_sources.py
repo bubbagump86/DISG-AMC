@@ -14,6 +14,7 @@ from pipeline.sources import (
     google_news_url,
     item_from_feed,
     merge,
+    relevance_ok,
 )
 
 TODAY = date(2026, 10, 18)
@@ -112,6 +113,28 @@ class ItemFromFeedTests(unittest.TestCase):
         spec = FeedSpec(url="x", label="y", type="news")
         entry = FeedItem(title="T", link="u", published=None, summary="s")
         self.assertIsNone(item_from_feed(entry, spec))
+
+
+class RelevanceTests(unittest.TestCase):
+    def test_unconfigured_company_keeps_everything(self):
+        self.assertTrue(relevance_ok({"name": "X"}, "Anything at all"))
+
+    def test_match_terms_require_a_hit(self):
+        company = {"name": "Enigma", "match_terms": ["enigma"]}
+        self.assertTrue(relevance_ok(company, "Enigma raises $71M seed"))
+        self.assertFalse(relevance_ok(company, "Moldova Robotics Team wins gold"))
+
+    def test_match_terms_are_case_insensitive(self):
+        company = {"match_terms": ["enigma"]}
+        self.assertTrue(relevance_ok(company, "ENIGMA emerges from stealth"))
+
+    def test_exclude_terms_win_over_match_terms(self):
+        company = {"match_terms": ["enigma"], "exclude_terms": ["enigma machine"]}
+        self.assertTrue(relevance_ok(company, "Enigma raises seed"))
+        self.assertFalse(relevance_ok(company, "Enigma machine cracked after 80 years"))
+
+    def test_exclude_terms_work_without_match_terms(self):
+        self.assertFalse(relevance_ok({"exclude_terms": ["broadway"]}, "Richard Sutton on Broadway"))
 
 
 class MergeTests(unittest.TestCase):

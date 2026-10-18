@@ -88,9 +88,27 @@ def _log(log, message: str) -> None:
         log(message)
 
 
+def _find_history(history: dict, seed: dict) -> dict:
+    """The published record this seed continues, following renames.
+
+    ``previous_ids`` carries retired ``_id`` values, so a company that was
+    renamed keeps its news archive instead of starting from scratch.
+    """
+    current = history.get(seed.get("_id"))
+    if current is not None:
+        return current
+    for old_id in seed.get("previous_ids") or []:
+        found = history.get(old_id)
+        if found is not None:
+            return found
+    return {}
+
+
 def build_record(seed: dict, news: list[dict]) -> dict:
     """Assemble one published record: curated facts + refreshed news."""
-    record = {key: value for key, value in seed.items() if key not in ("feeds", "news_query", "news_settings")}
+    internal = {"feeds", "news_query", "news_settings", "previous_ids",
+                "match_terms", "exclude_terms"}
+    record = {key: value for key, value in seed.items() if key not in internal}
     record["latest_news"] = news
     if isinstance(record.get("funding"), dict):
         record["funding"] = ordered(record["funding"], FUNDING_KEY_ORDER)
@@ -121,9 +139,15 @@ def run(
     max_news: int | None = None,
     detect_funding: bool = True,
     apply_funding: bool = False,
+    reset_news: bool = False,
     log=None,
 ) -> Report:
-    """Fetch, merge and assemble.  Pure with respect to the filesystem."""
+    """Fetch, merge and assemble.  Pure with respect to the filesystem.
+
+    ``only`` restricts which companies are *refreshed* -- it never restricts what
+    is published.  Companies outside the selection keep their existing published
+    record, so a partial run can never shrink ``data.json``.
+    """
     report = Report()
     defaults = config.get("defaults") or {}
     default_max_news = max_news or defaults.get("max_news") or sources.DEFAULT_MAX_NEWS
@@ -133,11 +157,23 @@ def run(
     wanted = {value.lower() for value in (only or [])}
 
     for seed in config.get("companies", []):
-        if wanted and seed["_id"].lower() not in wanted and seed["name"].lower() not in wanted:
+        previous = _find_history(history, seed)
+
+        selected = (
+            not wanted
+            or seed["_id"].lower() in wanted
+            or (seed.get("name") or "").lower() in wanted
+        )
+        if not selected:
+            # Carried through untouched: either its published record verbatim, or
+            # a fresh one when there is nothing published yet.
+            carried = previous if previous else build_record(seed, [])
+            report.data.append(carried)
+            report.news_total += len(carried.get("latest_news") or [])
+            report.companies += 1
             continue
 
-        previous = history.get(seed["_id"], {})
-        previous_news = previous.get("latest_news") or []
+        previous_news = [] if reset_news else (previous.get("latest_news") or [])
         previous_keys = {sources.dedupe_key(item) for item in previous_news}
 
         try:
@@ -247,10 +283,13 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--cache-dir", type=Path, default=DEFAULT_CACHE)
     parser.add_argument("--only", action="append", default=[], metavar="COMPANY",
                         help="restrict to one company (name or _id); repeatable")
-    parser.add_argument("--limit", type=int, help="process at most N companies")
+    parser.add_argument("--limit", type=int, help="refresh at most N companies (the rest are carried through)")
     parser.add_argument("--max-news", type=int, help="news items kept per company")
     parser.add_argument("--dry-run", action="store_true", help="fetch and report, write nothing")
     parser.add_argument("--check", action="store_true", help="exit 1 if the published files would change")
+    parser.add_argument("--reset-news", action="store_true",
+                        help="ignore stored news history for the selected companies "
+                             "(use after changing a news query)")
     parser.add_argument("--offline", action="store_true", help="serve feeds from the cache; never touch the network")
     parser.add_argument("--no-cache", action="store_true", help="ignore and do not write the fetch cache")
     parser.add_argument("--no-funding", action="store_true", help="skip funding detection")
@@ -267,9 +306,12 @@ def main(argv: list[str] | None = None) -> int:
 
     config = load_config(args.config)
     companies = config.get("companies", [])
+    only = list(args.only)
     if args.limit:
-        companies = companies[: args.limit]
-        config = {**config, "companies": companies}
+        # Selection, not truncation: the published file must stay complete.
+        only = only or [company["_id"] for company in companies[: args.limit]]
+    if args.reset_news and not only:
+        only = []  # reset every company
 
     fetcher = Fetcher(
         cache_dir=None if args.no_cache else args.cache_dir,
@@ -281,15 +323,17 @@ def main(argv: list[str] | None = None) -> int:
 
     log(f"refreshing {len(companies)} companies"
         + (" (offline)" if args.offline else "")
-        + (f" [only: {', '.join(args.only)}]" if args.only else ""))
+        + (f" [only: {', '.join(only)}]" if only else "")
+        + (" [reset-news]" if args.reset_news else ""))
     report = run(
         config,
         existing_data=existing,
         fetcher=fetcher,
-        only=args.only,
+        only=only or None,
         max_news=args.max_news,
         detect_funding=not args.no_funding,
         apply_funding=args.apply_funding,
+        reset_news=args.reset_news,
         log=log if args.verbose else None,
     )
     report = detect_changes(report, data_path=args.data, stats_path=args.stats)

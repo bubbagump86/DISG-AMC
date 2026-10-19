@@ -50,6 +50,36 @@ function setupThemeToggle() {
   });
 }
 
+// ============ Density ============
+// Compact by default (a scanning surface); comfortable is persisted because it
+// is a reading preference, not a per-session one.
+const DENSITY_KEY = 'ai-dashboard-density';
+
+function applyDensity(density, { persist = true } = {}) {
+  const next = density === 'comfortable' ? 'comfortable' : 'compact';
+  state.density = next;
+  document.documentElement.setAttribute('data-density', next);
+  const button = document.getElementById('density-toggle');
+  if (button) {
+    const comfortable = next === 'comfortable';
+    button.setAttribute('aria-pressed', comfortable ? 'true' : 'false');
+    button.textContent = comfortable ? 'Compact' : 'Comfortable';
+    button.setAttribute('aria-label', comfortable
+      ? 'Switch the table to compact density'
+      : 'Switch the table to comfortable density');
+  }
+  if (persist) localStorage.setItem(DENSITY_KEY, next);
+}
+
+function setupDensity() {
+  applyDensity(localStorage.getItem(DENSITY_KEY) || 'compact', { persist: false });
+  const button = document.getElementById('density-toggle');
+  if (!button) return;
+  button.addEventListener('click', () => {
+    applyDensity(state.density === 'comfortable' ? 'compact' : 'comfortable');
+  });
+}
+
 // ============ Sidebar chrome ============
 // Bound in JS rather than inline `onclick`, which does not see module scope.
 
@@ -157,6 +187,7 @@ function init() {
 
   safeCall(setupChrome);
   safeCall(setupThemeToggle);
+  safeCall(setupDensity);
   safeCall(setupDashboardControls);
 
   safeCall(renderStats);

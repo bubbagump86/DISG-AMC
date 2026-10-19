@@ -215,6 +215,21 @@ async function run() {
   sidebarSearch.dispatch('input');
   check('clearing the search restores the list', el('nav-companies').innerHTML === always);
 
+  // ---- density --------------------------------------------------------------
+  const densityButton = el('density-toggle');
+  check('density defaults to compact',
+    densityButton.getAttribute('aria-pressed') === 'false'
+      && densityButton.textContent === 'Comfortable',
+    `aria-pressed=${densityButton.getAttribute('aria-pressed')}, label="${densityButton.textContent}"`);
+  densityButton.dispatch('click');
+  check('clicking density switches to comfortable',
+    densityButton.getAttribute('aria-pressed') === 'true'
+      && dom.document.documentElement.getAttribute('data-density') === 'comfortable',
+    `aria-pressed=${densityButton.getAttribute('aria-pressed')}`);
+  densityButton.dispatch('click');
+  check('clicking again switches back to compact',
+    dom.document.documentElement.getAttribute('data-density') === 'compact');
+
   // ---- routing: company profile --------------------------------------------
   const anthropic = dataset.find((c) => c.name === 'Anthropic');
   dom.location.hash = `#co-${anthropic._id}`;

@@ -22,4 +22,6 @@ export const state = {
   sidebarSearch: '',
   /** Slug of the company whose profile is open, or null on the dashboard. */
   activeCompany: null,
+  /** Table density: 'compact' or 'comfortable'. */
+  density: 'compact',
 };

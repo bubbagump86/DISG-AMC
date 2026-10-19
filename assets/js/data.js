@@ -87,7 +87,7 @@ export function loadData(url = DATA_URL) {
     .catch(err => {
       console.error('Dashboard data load failed:', err);
       document.body.insertAdjacentHTML('afterbegin',
-        '<div style="position:fixed;top:0;left:0;right:0;background:#fee;color:#900;padding:12px;text-align:center;z-index:99999;font-family:sans-serif;">' +
+        '<div style="position:fixed;top:0;left:0;right:0;background: var(--red-bg); color: var(--red);padding:12px;text-align:center;z-index:99999;font-family:sans-serif;">' +
         '\u26a0 Could not load data.json. <a href="./data.json" target="_blank">View raw</a> or <button onclick="location.reload()">retry</button>.' +
         '</div>');
       return null;

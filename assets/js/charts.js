@@ -63,7 +63,7 @@ export function renderArrChart() {
       return {
         c, value: c.arr_usd,
         sub: c.arr_source_note || 'Not publicly disclosed',
-        fillStyle: 'background: linear-gradient(90deg, var(--purple), var(--pink));',
+        fillStyle: 'background: var(--accent);',
         clickAnchor: anchor
       };
     });
@@ -78,7 +78,7 @@ export function renderValuationChart() {
       return {
         c, value: c.funding?.post_money_valuation_usd,
         sub: `${c.funding?.latest_round || '—'} · ${fmtDate(c.funding?.date)}`,
-        fillStyle: 'background: linear-gradient(90deg, var(--green), var(--accent));',
+        fillStyle: 'background: var(--accent);',
         clickAnchor: anchor
       };
     });
@@ -91,11 +91,10 @@ export function renderDonut() {
     const counts = {};
     state.companies.forEach(c => { counts[c.category] = (counts[c.category] || 0) + 1; });
     const total = state.companies.length;
-    const isLight = document.documentElement.getAttribute('data-theme') === 'light';
-    const segStroke = isLight ? '#ffffff' : '#0d1117';
-    const numColor = isLight ? '#0d1117' : '#f0f6fc';
-    const labelColor = isLight ? '#59636e' : '#8b949e';
-    const colors = ['#58a6ff', '#bc8cff', '#3fb950', '#d29922', '#f778ba', '#f85149', '#79b8ff', '#56d364'];
+    // Colours come from CSS custom properties, so the chart follows the theme
+    // and the palette lives in one place. `style` rather than `fill="..."`:
+    // var() does not resolve reliably in presentation attributes.
+    const colors = [1, 2, 3, 4, 5, 6, 7, 8].map(n => `var(--cat-${n})`);
     const entries = Object.entries(counts).sort((a, b) => b[1] - a[1]);
     const cx = 140, cy = 140, rOuter = 110, rInner = 70;
     let cumAngle = -Math.PI / 2; // start at top
@@ -109,13 +108,13 @@ export function renderDonut() {
       const x3 = cx + rInner * Math.cos(a2), y3 = cy + rInner * Math.sin(a2);
       const x4 = cx + rInner * Math.cos(a1), y4 = cy + rInner * Math.sin(a1);
       const pct = ((n / total) * 100).toFixed(0);
-      arcs += `<path class="donut-arc" data-cat="${escapeAttr(cat)}" data-count="${n}" data-pct="${pct}" d="M ${x1.toFixed(1)} ${y1.toFixed(1)} A ${rOuter} ${rOuter} 0 ${large} 1 ${x2.toFixed(1)} ${y2.toFixed(1)} L ${x3.toFixed(1)} ${y3.toFixed(1)} A ${rInner} ${rInner} 0 ${large} 0 ${x4.toFixed(1)} ${y4.toFixed(1)} Z" fill="${colors[i % colors.length]}" stroke="${segStroke}" stroke-width="2"/>`;
+      arcs += `<path class="donut-arc" data-cat="${escapeAttr(cat)}" data-count="${n}" data-pct="${pct}" d="M ${x1.toFixed(1)} ${y1.toFixed(1)} A ${rOuter} ${rOuter} 0 ${large} 1 ${x2.toFixed(1)} ${y2.toFixed(1)} L ${x3.toFixed(1)} ${y3.toFixed(1)} A ${rInner} ${rInner} 0 ${large} 0 ${x4.toFixed(1)} ${y4.toFixed(1)} Z" style="fill: ${colors[i % colors.length]}; stroke: var(--bg-1)" stroke-width="2"/>`;
       cumAngle = a2;
     });
     const donut = `<svg viewBox="0 0 280 280" width="100%" style="max-width: 280px;">
       ${arcs}
-      <text x="140" y="135" text-anchor="middle" fill="${numColor}" font-size="36" font-weight="700">${total}</text>
-      <text x="140" y="160" text-anchor="middle" fill="${labelColor}" font-size="11" font-weight="500" text-transform="uppercase">state.companies</text>
+      <text x="140" y="135" text-anchor="middle" style="fill: var(--text-0)" font-size="36" font-weight="700">${total}</text>
+      <text x="140" y="160" text-anchor="middle" style="fill: var(--text-2)" font-size="11" font-weight="500" text-transform="uppercase">state.companies</text>
     </svg>`;
     document.getElementById('donut-wrap').innerHTML = `
       <div style="position:relative;">

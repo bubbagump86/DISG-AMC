@@ -151,13 +151,9 @@ export function renderMap() {
     const inner = innerMatch[1];
     // Color the land features using CSS vars so they adapt to dark/light theme
     // (the SVG path is inlined into a div; we set CSS vars on the wrapper)
-    const isLight = document.documentElement.getAttribute('data-theme') === 'light';
-    const landFill = isLight ? '#eef1f4' : '#1c2128';
-    const landStroke = isLight ? '#d0d7de' : '#30363d';
-    const dotStroke = isLight ? '#ffffff' : '#0d1117';
     const styled = inner
       .replace(/fill-rule="evenodd"/g, '')
-      .replace(/<path /g, `<path fill="${landFill}" stroke="${landStroke}" stroke-width="0.3" `)
+      .replace(/<path /g, '<path class="map-land" ')
       .replace(/<g /g, '<g transform="translate(0,0)" ');
 
     // Build dots
@@ -187,7 +183,7 @@ export function renderMap() {
         const c = g.companies[0];
         const r = valuationToRadius(c.funding?.post_money_valuation_usd);
         const opacity = 0.7 + 0.3 * Math.min(1, (c.confidence === 'high' ? 1 : c.confidence === 'medium' ? 0.6 : 0.3));
-        dots += `<circle class="map-dot" cx="${baseX.toFixed(1)}" cy="${baseY.toFixed(1)}" r="${r}" data-r="${r}" fill="#58a6ff" stroke="${dotStroke}" stroke-width="${Math.max(0.5, r/8).toFixed(2)}" fill-opacity="${opacity}" data-co="${escapeHtml(c.name)}" tabindex="0" role="button" aria-label="${escapeHtml(markerLabel(c))}"></circle>`;
+        dots += `<circle class="map-dot" cx="${baseX.toFixed(1)}" cy="${baseY.toFixed(1)}" r="${r}" data-r="${r}" style="fill: var(--accent); stroke: var(--bg-1)" stroke-width="${Math.max(0.5, r/8).toFixed(2)}" fill-opacity="${opacity}" data-co="${escapeHtml(c.name)}" tabindex="0" role="button" aria-label="${escapeHtml(markerLabel(c))}"></circle>`;
       } else {
         // Multi-company cluster: render a halo + count badge + 1-2 representative dots
         // Sort by size (largest first) so the biggest pins are visible
@@ -202,21 +198,21 @@ export function renderMap() {
         const maxR = valuationToRadius(sorted[0].funding?.post_money_valuation_usd);
         const haloR = maxR + 4;
         // Cluster halo (transparent, captures hover for fan-out)
-        dots += `<circle class="map-cluster-halo" cx="${baseX.toFixed(1)}" cy="${baseY.toFixed(1)}" r="${haloR}" fill="#58a6ff" fill-opacity="0.15" stroke="#58a6ff" stroke-width="0.5" stroke-opacity="0.4" data-hq="${escapeHtml(g.hq)}" data-cluster-size="${n}"></circle>`;
+        dots += `<circle class="map-cluster-halo" cx="${baseX.toFixed(1)}" cy="${baseY.toFixed(1)}" r="${haloR}" style="fill: var(--accent); stroke: var(--accent)" fill-opacity="0.15" stroke-width="0.5" stroke-opacity="0.4" data-hq="${escapeHtml(g.hq)}" data-cluster-size="${n}"></circle>`;
         // Big representative dot in center
         const opacity = 0.7 + 0.3 * Math.min(1, (sorted[0].confidence === 'high' ? 1 : sorted[0].confidence === 'medium' ? 0.6 : 0.3));
-        dots += `<circle class="map-dot map-dot-cluster-head" cx="${baseX.toFixed(1)}" cy="${baseY.toFixed(1)}" r="${maxR}" data-r="${maxR}" fill="#58a6ff" stroke="${dotStroke}" stroke-width="${Math.max(0.5, maxR/8).toFixed(2)}" fill-opacity="${opacity}" data-co="${escapeHtml(sorted[0].name)}" data-cluster-hq="${escapeHtml(g.hq)}" tabindex="0" role="button" aria-label="${escapeHtml(markerLabel(sorted[0], ` and ${n - 1} more at ${g.hq}`))}"></circle>`;
+        dots += `<circle class="map-dot map-dot-cluster-head" cx="${baseX.toFixed(1)}" cy="${baseY.toFixed(1)}" r="${maxR}" data-r="${maxR}" style="fill: var(--accent); stroke: var(--bg-1)" stroke-width="${Math.max(0.5, maxR/8).toFixed(2)}" fill-opacity="${opacity}" data-co="${escapeHtml(sorted[0].name)}" data-cluster-hq="${escapeHtml(g.hq)}" tabindex="0" role="button" aria-label="${escapeHtml(markerLabel(sorted[0], ` and ${n - 1} more at ${g.hq}`))}"></circle>`;
         // 2nd largest at a small offset (if exists)
         if (sorted.length >= 2) {
           const r2 = valuationToRadius(sorted[1].funding?.post_money_valuation_usd);
           const dx2 = -3, dy2 = -3;
           const op2 = 0.7 + 0.3 * Math.min(1, (sorted[1].confidence === 'high' ? 1 : sorted[1].confidence === 'medium' ? 0.6 : 0.3));
-          dots += `<circle class="map-dot map-dot-cluster-peek" cx="${(baseX+dx2).toFixed(1)}" cy="${(baseY+dy2).toFixed(1)}" r="${r2}" data-r="${r2}" fill="#58a6ff" stroke="${dotStroke}" stroke-width="${Math.max(0.5, r2/8).toFixed(2)}" fill-opacity="${op2}" data-co="${escapeHtml(sorted[1].name)}" data-cluster-hq="${escapeHtml(g.hq)}" aria-hidden="true" tabindex="-1"></circle>`;
+          dots += `<circle class="map-dot map-dot-cluster-peek" cx="${(baseX+dx2).toFixed(1)}" cy="${(baseY+dy2).toFixed(1)}" r="${r2}" data-r="${r2}" style="fill: var(--accent); stroke: var(--bg-1)" stroke-width="${Math.max(0.5, r2/8).toFixed(2)}" fill-opacity="${op2}" data-co="${escapeHtml(sorted[1].name)}" data-cluster-hq="${escapeHtml(g.hq)}" aria-hidden="true" tabindex="-1"></circle>`;
         }
         // Count badge
         dots += `<g class="map-cluster-badge" data-hq="${escapeHtml(g.hq)}">
-          <circle cx="${(baseX + haloR - 2).toFixed(1)}" cy="${(baseY - haloR + 2).toFixed(1)}" r="3.5" fill="#f85149" stroke="#fff" stroke-width="0.4"/>
-          <text x="${(baseX + haloR - 2).toFixed(1)}" y="${(baseY - haloR + 3).toFixed(1)}" text-anchor="middle" fill="#fff" font-size="5" font-weight="bold">${n}</text>
+          <circle cx="${(baseX + haloR - 2).toFixed(1)}" cy="${(baseY - haloR + 2).toFixed(1)}" r="3.5" style="fill: var(--red); stroke: var(--bg-0)" stroke-width="0.4"/>
+          <text x="${(baseX + haloR - 2).toFixed(1)}" y="${(baseY - haloR + 3).toFixed(1)}" text-anchor="middle" style="fill: var(--bg-0)" font-size="5" font-weight="bold">${n}</text>
         </g>`;
         // Hidden dots for the other companies (shown on hover)
         // We store their data on the halo element via a side-channel map
@@ -466,8 +462,8 @@ export function renderMap() {
         dot.setAttribute('cy', (cy + item.dy).toFixed(2));
         dot.setAttribute('r', item.r);
         dot.setAttribute('data-r', item.r);
-        dot.setAttribute('fill', '#58a6ff');
-        dot.setAttribute('stroke', dotStroke);
+        dot.style.fill = 'var(--accent)';
+        dot.style.stroke = 'var(--bg-1)';
         dot.setAttribute('stroke-width', Math.max(0.5, item.r/8).toFixed(2));
         dot.setAttribute('fill-opacity', item.opacity);
         dot.setAttribute('data-co', item.name);

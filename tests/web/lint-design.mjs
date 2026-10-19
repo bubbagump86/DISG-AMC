@@ -48,6 +48,28 @@ const rawHex = [...outsideTokens.matchAll(/#[0-9a-fA-F]{3,8}\b/g)]
 check(rawHex.length === 0,
   `palette colours come from tokens${rawHex.length ? ` (raw: ${[...new Set(rawHex)].slice(0, 6).join(', ')})` : ''}`);
 
+// ---- no decoration the baseline forbids -----------------------------------
+const gradients = [...css.matchAll(/\b(?:linear|radial|conic)-gradient\b/g)].map((m) => m[0]);
+check(gradients.length === 0,
+  `no gradients${gradients.length ? ` (found ${gradients.slice(0, 3).join(', ')})` : ''}`);
+
+check(!/--purple|--pink/.test(css), 'no purple/pink palette tokens');
+
+// Glows used as affordances, e.g. a coloured blur on a small dot.
+const glows = [...css.matchAll(/box-shadow:\s*0 0 \d+px var\(--(?:accent|green|red|amber)\)/g)].map((m) => m[0]);
+check(glows.length === 0, `no coloured glow shadows${glows.length ? ` (found ${glows[0]})` : ''}`);
+
+// The charts and map used to bake the palette in as hex, which meant a theme
+// refresh could not change them.
+for (const file of ['charts.js', 'map.js', 'data.js']) {
+  const js = readFileSync(path.join(ROOT, 'assets/js', file), 'utf8');
+  const hex = [...js.matchAll(/#[0-9a-fA-F]{3,8}\b/g)].map((m) => m[0]);
+  check(hex.length === 0, `${file} takes colours from tokens${hex.length ? ` (found ${[...new Set(hex)].join(', ')})` : ''}`);
+}
+
+const catTokens = [1, 2, 3, 4, 5, 6, 7, 8].every((n) => css.includes(`--cat-${n}:`));
+check(catTokens, 'the donut has eight category tokens');
+
 // ---- motion ----------------------------------------------------------------
 check(/@media \(prefers-reduced-motion: reduce\)/.test(css),
   'a prefers-reduced-motion guard exists');

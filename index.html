@@ -3,7 +3,29 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
 <title>AI Intel Dashboard · Strategic AI Company Tracker</title>
+<meta name="description" content="Track 40 leading AI companies: funding, ARR, valuation, headquarters and the latest news, refreshed daily." />
+<link rel="canonical" href="https://bubbagump86.github.io/DISG-AMC/" />
+<meta name="robots" content="index,follow" />
+
+<!-- One theme per system preference; the in-page toggle overrides afterwards. -->
+<meta name="color-scheme" content="dark light" />
+<meta name="theme-color" content="#07090d" media="(prefers-color-scheme: dark)" />
+<meta name="theme-color" content="#f6f8fa" media="(prefers-color-scheme: light)" />
+
+<meta property="og:type" content="website" />
+<meta property="og:site_name" content="AI Intel Dashboard" />
+<meta property="og:url" content="https://bubbagump86.github.io/DISG-AMC/" />
+<meta property="og:title" content="AI Intel Dashboard · Strategic AI Company Tracker" />
+<meta property="og:description" content="Track 40 leading AI companies: funding, ARR, valuation, headquarters and the latest news, refreshed daily." />
+
+<meta name="twitter:card" content="summary" />
+<meta name="twitter:title" content="AI Intel Dashboard · Strategic AI Company Tracker" />
+<meta name="twitter:description" content="Track 40 leading AI companies: funding, ARR, valuation, headquarters and the latest news, refreshed daily." />
+
+<!-- Inline SVG favicon: no extra request, no binary asset to keep in sync. -->
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%2358a6ff'/%3E%3Ctext x='16' y='21.5' font-family='system-ui,sans-serif' font-size='13' font-weight='700' text-anchor='middle' fill='%2307090d'%3EAI%3C/text%3E%3C/svg%3E" />
 <link rel="stylesheet" href="assets/css/app.css" />
 </head>
 <body>
@@ -17,7 +39,7 @@
     <div class="sidebar-header">
       <div class="logo-mark">AI</div>
       <div class="brand-text">
-        <h1>AI Intel</h1>
+        <div class="brand-name">AI Intel</div>
         <p>Strategic Tracker</p>
       </div>
       <button class="theme-toggle" id="theme-toggle" title="Toggle light/dark mode" aria-label="Toggle theme">
@@ -65,7 +87,7 @@
     <!-- ===== SINGLE-PAGE DASHBOARD ===== -->
     <div id="page-top" class="page-header">
       <div class="page-title">
-        <h2>AI Intel Dashboard</h2>
+        <h1>AI Intel Dashboard</h1>
         <p>Strategic intelligence on the AI companies you track — all charts and tables on one page</p>
       </div>
     </div>
@@ -79,7 +101,7 @@
     <div class="chart-card">
       <div class="chart-head">
         <div>
-          <div class="chart-title">Company comparison</div>
+          <h2 class="chart-title">Company comparison</h2>
           <div class="chart-subtitle">All tracked companies, side by side</div>
         </div>
         <div class="chart-meta" id="table-meta"></div>
@@ -102,7 +124,7 @@
       <div class="chart-card">
         <div class="chart-head">
           <div>
-            <div class="chart-title">Total capital raised</div>
+            <h2 class="chart-title">Total capital raised</h2>
             <div class="chart-subtitle">Cumulative across disclosed rounds</div>
           </div>
           <div class="chart-meta" id="funding-meta"></div>
@@ -112,7 +134,7 @@
       <div class="chart-card">
         <div class="chart-head">
           <div>
-            <div class="chart-title">ARR / Revenue</div>
+            <h2 class="chart-title">ARR / Revenue</h2>
             <div class="chart-subtitle">Annualized recurring revenue, latest disclosed</div>
           </div>
           <div class="chart-meta" id="arr-meta"></div>
@@ -125,7 +147,7 @@
       <div class="chart-card">
         <div class="chart-head">
           <div>
-            <div class="chart-title">Post-money valuation</div>
+            <h2 class="chart-title">Post-money valuation</h2>
             <div class="chart-subtitle">From latest disclosed funding round</div>
           </div>
           <div class="chart-meta" id="val-meta"></div>
@@ -135,7 +157,7 @@
       <div class="chart-card">
         <div class="chart-head">
           <div>
-            <div class="chart-title">Category distribution</div>
+            <h2 class="chart-title">Category distribution</h2>
             <div class="chart-subtitle">How your tracked companies break down</div>
           </div>
         </div>
@@ -148,7 +170,7 @@
     <div class="map-section">
       <div class="map-header">
         <div>
-          <div class="map-title">Global headquarters distribution</div>
+          <h2 class="map-title">Global headquarters distribution</h2>
           <div class="map-subtitle">Hover over a marker for details</div>
         </div>
         <div class="map-legend">
@@ -167,7 +189,7 @@
     <div class="chart-card">
       <div class="chart-head">
         <div>
-          <div class="chart-title">Recent developments</div>
+          <h2 class="chart-title">Recent developments</h2>
           <div class="chart-subtitle">Latest tracked news across all companies</div>
         </div>
       </div>

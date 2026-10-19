@@ -5,9 +5,9 @@
   "type": "module",
   "description": "Static dashboard (index.html + data.json). This manifest exists only so Node can run the browser smoke test as ES modules. There are no dependencies: the site has no build step and the pipeline is stdlib Python.",
   "scripts": {
-    "test": "node tests/web/unit.mjs && node tests/web/smoke.mjs && node tests/web/lint-workflows.mjs",
+    "test": "node tests/web/unit.mjs && node tests/web/smoke.mjs && node tests/web/lint-workflows.mjs && node tests/web/lint-design.mjs",
     "test:unit": "node tests/web/unit.mjs",
     "test:web": "node tests/web/smoke.mjs",
-    "lint:workflows": "node tests/web/lint-workflows.mjs"
+    "lint:workflows": "node tests/web/lint-workflows.mjs && node tests/web/lint-design.mjs"
   }
 }

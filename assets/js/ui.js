@@ -7,11 +7,14 @@ import { state } from './state.js';
 import { escapeHtml, fmtLastUpdated, fmtUSD } from './format.js';
 import { computeStatsFromCompanies } from './data.js';
 
-export function scrollToAnchor(id) {
+export   function scrollToAnchor(id) {
     const el = document.getElementById(id);
     if (el) {
       const top = el.getBoundingClientRect().top + window.pageYOffset - 20;
-      window.scrollTo({ top, behavior: 'smooth' });
+      // CSS can disable smooth scrolling, but this call sets it explicitly, so
+      // the preference has to be honoured here too.
+      const reduced = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      window.scrollTo({ top, behavior: reduced ? 'auto' : 'smooth' });
     }
     document.getElementById('sidebar').classList.remove('open');
   }

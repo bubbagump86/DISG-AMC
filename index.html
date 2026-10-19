@@ -75,6 +75,8 @@
       </div>
 
       <div class="nav-label" style="margin-top: 18px;">Companies</div>
+      <input type="search" id="sidebar-search" class="nav-search" placeholder="Filter companies…"
+             aria-label="Filter companies by name, category or headquarters" />
       <div id="nav-companies"></div>
     </div>
     <div class="sidebar-footer">
@@ -84,7 +86,8 @@
   </aside>
 
   <main class="main" id="main" tabindex="-1">
-    <!-- ===== SINGLE-PAGE DASHBOARD ===== -->
+    <div id="dashboard-view">
+    <!-- ===== DASHBOARD VIEW ===== -->
     <div id="page-top" class="page-header">
       <div class="page-title">
         <h1>AI Intel Dashboard</h1>
@@ -196,13 +199,10 @@
       <div class="timeline" id="overview-timeline"></div>
     </div>
 
-    <!-- COMPANY DETAIL SECTIONS (anchor targets) -->
-    <div class="detail-section-header" id="company-details">
-      <h2>Company profiles</h2>
-      <p>Click a company in the sidebar or scroll to dive into each one</p>
-    </div>
-    <div id="company-details-list"></div>
+    </div><!-- /dashboard-view -->
 
+    <!-- COMPANY PROFILE VIEW: one company, rendered on demand by the router -->
+    <section id="profile-view" aria-live="polite" hidden></section>
   </main>
 </div>
 

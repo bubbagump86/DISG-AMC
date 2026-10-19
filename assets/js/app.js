@@ -1,146 +1,183 @@
 /**
- * Entry point: shared helpers, theme and chrome wiring, and init().
+ * Entry point: theme and chrome wiring, init(), and the bootstrap sequence.
  *
- * Extracted from the original single-file index.html (Phase 2).
+ * The page has two views -- the dashboard and a company profile -- selected by
+ * the hash router. Everything renders from the dashboard's first paint; a
+ * profile is rendered on demand.
  */
+
 import { state } from './state.js';
 import { loadData, loadStats } from './data.js';
-import { renderSidebarCompanies, renderStats, scrollToAnchor, setupScrollSpy, toggleSidebar } from './ui.js';
+import {
+  closeSidebar,
+  renderSidebarCompanies,
+  renderStats,
+  setupScrollSpy,
+  toggleSidebar,
+} from './ui.js';
 import { applyFilters, renderCategoryButtons, renderTable } from './table.js';
 import { renderArrChart, renderDonut, renderFundingChart, renderValuationChart } from './charts.js';
 import { renderMap } from './map.js';
 import { renderTimeline } from './timeline.js';
-import { closeModal, renderDetailSections } from './detail.js';
+import { closeModal } from './detail.js';
+import { startRouter } from './router.js';
 
-  function safeCall(fn) {
-    try { fn(); }
-    catch (e) { console.error('Render failed:', fn.name, e); }
+function safeCall(fn) {
+  try { fn(); }
+  catch (e) { console.error('Render failed:', fn.name, e); }
+}
+
+// ============ Theme toggle ============
+
+function setupThemeToggle() {
+  // Restore from localStorage; otherwise respect system preference
+  const saved = localStorage.getItem('ai-dashboard-theme');
+  if (saved === 'light' || saved === 'dark') {
+    document.documentElement.setAttribute('data-theme', saved);
+  } else if (window.matchMedia && window.matchMedia('(prefers-color-scheme: light)').matches) {
+    document.documentElement.setAttribute('data-theme', 'light');
   }
-  // ============ Theme toggle ============
+  const btn = document.getElementById('theme-toggle');
+  if (!btn) return;
+  btn.addEventListener('click', () => {
+    const cur = document.documentElement.getAttribute('data-theme') === 'light' ? 'light' : 'dark';
+    const next = cur === 'light' ? 'dark' : 'light';
+    document.documentElement.setAttribute('data-theme', next);
+    localStorage.setItem('ai-dashboard-theme', next);
+    // Re-render what bakes colours in at render time.
+    safeCall(renderMap);
+    safeCall(renderDonut);
+  });
+}
 
-  function setupThemeToggle() {
-    // Restore from localStorage; otherwise respect system preference
-    const saved = localStorage.getItem('ai-dashboard-theme');
-    if (saved === 'light' || saved === 'dark') {
-      document.documentElement.setAttribute('data-theme', saved);
-    } else if (window.matchMedia && window.matchMedia('(prefers-color-scheme: light)').matches) {
-      document.documentElement.setAttribute('data-theme', 'light');
-    }
-    const btn = document.getElementById('theme-toggle');
-    if (!btn) return;
-    btn.addEventListener('click', () => {
-      const cur = document.documentElement.getAttribute('data-theme') === 'light' ? 'light' : 'dark';
-      const next = cur === 'light' ? 'dark' : 'light';
-      document.documentElement.setAttribute('data-theme', next);
-      localStorage.setItem('ai-dashboard-theme', next);
-      // Re-render map and donut (they bake in colors at render time)
-      safeCall(renderMap);
-      safeCall(renderDonut);
-    });
-  }
+// ============ Sidebar chrome ============
+// Bound in JS rather than inline `onclick`, which does not see module scope.
 
-  // ============ Sidebar chrome ============
-  // Bound in JS rather than inline `onclick`, which does not see module scope.
-
-  function setupChrome() {
-    const toggle = document.getElementById('menu-toggle');
-    const backdrop = document.getElementById('sidebar-backdrop');
-    if (toggle) {
-      toggle.addEventListener('click', toggleSidebar);
-      toggle.addEventListener('keydown', e => {
-        if (e.key === 'Enter' || e.key === ' ') {
-          e.preventDefault();
-          toggleSidebar();
-        }
-      });
-    }
-    if (backdrop) backdrop.addEventListener('click', toggleSidebar);
-
-    // One delegated listener for every sidebar link, static or generated, with
-    // keyboard activation. This replaced 40+ per-item listeners that were
-    // re-attached on every re-render and were mouse-only.
-    const sidebar = document.getElementById('sidebar');
-    if (!sidebar) return;
-    const activate = target => {
-      const item = target && target.closest ? target.closest('.nav-item') : null;
-      if (item && item.dataset.anchor) scrollToAnchor(item.dataset.anchor);
-    };
-    sidebar.addEventListener('click', e => activate(e.target));
-    sidebar.addEventListener('keydown', e => {
-      if (e.key !== 'Enter' && e.key !== ' ') return;
-      const item = e.target && e.target.closest ? e.target.closest('.nav-item') : null;
-      if (item) {
+function setupChrome() {
+  const toggle = document.getElementById('menu-toggle');
+  const backdrop = document.getElementById('sidebar-backdrop');
+  if (toggle) {
+    toggle.addEventListener('click', toggleSidebar);
+    toggle.addEventListener('keydown', e => {
+      if (e.key === 'Enter' || e.key === ' ') {
         e.preventDefault();
-        activate(e.target);
+        toggleSidebar();
       }
     });
   }
+  if (backdrop) backdrop.addEventListener('click', toggleSidebar);
 
-  // ============ Modal focus trap ============
-  // Keeps Tab inside the dialog while it is open, so focus cannot wander into
-  // the page behind it.
-  function trapFocus(event) {
-    const overlay = document.getElementById('modal');
-    if (!overlay.classList.contains('open')) return;
-    const focusable = overlay.querySelectorAll(
-      'a[href], button:not([disabled]), input:not([disabled]), [tabindex]:not([tabindex="-1"])'
-    );
-    if (!focusable.length) return;
-    const first = focusable[0];
-    const last = focusable[focusable.length - 1];
-    if (event.shiftKey && document.activeElement === first) {
-      event.preventDefault();
-      last.focus();
-    } else if (!event.shiftKey && document.activeElement === last) {
-      event.preventDefault();
-      first.focus();
+  // One delegated listener for every sidebar entry, static or generated. The
+  // company entries are real links, so the browser changes the hash and the
+  // router takes over; this only has to close the mobile drawer.
+  const sidebar = document.getElementById('sidebar');
+  if (!sidebar) return;
+
+  const activate = item => {
+    if (!item) return;
+    if (item.dataset.anchor) {
+      window.location.hash = `#${item.dataset.anchor}`;
     }
+    closeSidebar();
+  };
+  sidebar.addEventListener('click', e => {
+    if (!e.target || !e.target.closest) return;
+    activate(e.target.closest('.nav-item'));
+  });
+  sidebar.addEventListener('keydown', e => {
+    if (e.key !== 'Enter' && e.key !== ' ') return;
+    if (!e.target || !e.target.closest) return;
+    const item = e.target.closest('.nav-item');
+    if (item) {
+      e.preventDefault();
+      activate(item);
+    }
+  });
+}
+
+// ============ Modal focus trap ============
+// Keeps Tab inside the dialog while it is open, so focus cannot wander into the
+// page behind it.
+
+function trapFocus(event) {
+  const overlay = document.getElementById('modal');
+  if (!overlay.classList.contains('open')) return;
+  const focusable = overlay.querySelectorAll(
+    'a[href], button:not([disabled]), input:not([disabled]), [tabindex]:not([tabindex="-1"])'
+  );
+  if (!focusable.length) return;
+  const first = focusable[0];
+  const last = focusable[focusable.length - 1];
+  if (event.shiftKey && document.activeElement === first) {
+    event.preventDefault();
+    last.focus();
+  } else if (!event.shiftKey && document.activeElement === last) {
+    event.preventDefault();
+    first.focus();
+  }
+}
+
+function setupDashboardControls() {
+  document.getElementById('company-search').addEventListener('input', e => {
+    state.search = e.target.value;
+    applyFilters();
+  });
+  document.getElementById('filter-clear').addEventListener('click', () => {
+    state.search = '';
+    state.categoryFilter = 'All';
+    document.getElementById('company-search').value = '';
+    renderCategoryButtons();
+    applyFilters();
+  });
+
+  const sidebarSearch = document.getElementById('sidebar-search');
+  if (sidebarSearch) {
+    sidebarSearch.addEventListener('input', e => {
+      state.sidebarSearch = e.target.value;
+      renderSidebarCompanies();
+    });
   }
 
-  function init() {
-    document.getElementById('last-updated').textContent = 'Last refresh: ' + new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
-    safeCall(setupChrome);
-    safeCall(setupThemeToggle);
-    safeCall(renderStats);
-    safeCall(renderSidebarCompanies);
-    safeCall(renderCategoryButtons);
-    safeCall(renderTable);
-    safeCall(renderFundingChart);
-    safeCall(renderArrChart);
-    safeCall(renderValuationChart);
-    safeCall(renderDonut);
-    safeCall(renderMap);
-    safeCall(() => renderTimeline('overview-timeline', true));
-    safeCall(renderDetailSections);
-    safeCall(setupScrollSpy);
+  document.getElementById('modal').addEventListener('click', e => {
+    const target = e.target;
+    if (!target) return;
+    if (target.id === 'modal') closeModal();
+    else if (target.closest && target.closest('[data-action="close-modal"]')) closeModal();
+    else if (target.closest && target.closest('[data-action="open-profile"]')) closeModal();
+  });
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Escape') closeModal();
+    else if (e.key === 'Tab') trapFocus(e);
+  });
+}
 
-    document.getElementById('company-search').addEventListener('input', e => {
-      state.search = e.target.value;
-      applyFilters();
-    });
-    document.getElementById('filter-clear').addEventListener('click', () => {
-      state.search = '';
-      state.categoryFilter = 'All';
-      document.getElementById('company-search').value = '';
-      renderCategoryButtons();
-      applyFilters();
-    });
-    document.getElementById('modal').addEventListener('click', e => {
-      const target = e.target;
-      if (target.id === 'modal') closeModal();
-      else if (target.closest && target.closest('[data-action="close-modal"]')) closeModal();
-    });
-    document.addEventListener('keydown', e => {
-      if (e.key === 'Escape') closeModal();
-      else if (e.key === 'Tab') trapFocus(e);
-    });
-  }
+function init() {
+  document.getElementById('last-updated').textContent =
+    'Last refresh: ' + new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+
+  safeCall(setupChrome);
+  safeCall(setupThemeToggle);
+  safeCall(setupDashboardControls);
+
+  safeCall(renderStats);
+  safeCall(renderSidebarCompanies);
+  safeCall(renderCategoryButtons);
+  safeCall(renderTable);
+  safeCall(renderFundingChart);
+  safeCall(renderArrChart);
+  safeCall(renderValuationChart);
+  safeCall(renderDonut);
+  safeCall(renderMap);
+  safeCall(() => renderTimeline('overview-timeline', true));
+  safeCall(setupScrollSpy);
+}
 
 // ---- bootstrap ------------------------------------------------------------
-// Load the data first, then the stats sidecar, then render. The stats sidecar
-// is optional: renderStats falls back to computing from the companies.
+// Load the data first, then render, then resolve the route. Routing last means
+// a deep link into a profile has data to render.
 loadData().then(() => {
   safeCall(init);
+  safeCall(() => startRouter());
   loadStats().then(loaded => {
     if (loaded) {
       state.stats = loaded;

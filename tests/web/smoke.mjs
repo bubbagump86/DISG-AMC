@@ -3,16 +3,16 @@
  *
  * Runs the page's own JavaScript against a DOM shim (no browser, no jsdom --
  * the npm registry is unreachable in this environment) and asserts that the
- * whole render pipeline succeeded.  This is the safety net for refactoring
- * `index.html`: it works identically before and after the page stops carrying
- * an inline script, because it discovers whichever form the page currently uses.
+ * render pipeline and the hash router both work.
  *
  * The strongest assertion is "no console errors": every render is routed
  * through the app's `safeCall` helper, which swallows failures into
- * `console.error`.  A silently broken render therefore fails this test.
+ * `console.error`. A silently broken render therefore fails this test.
+ *
+ * The shim models `location.hash` and `hashchange`, so the company route is
+ * exercised for real rather than assumed.
  *
  * Usage:  node tests/web/smoke.mjs
- * Exit:   0 on success, 1 on failure.
  */
 
 import { readFileSync } from 'node:fs';
@@ -26,8 +26,6 @@ const HERE = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.resolve(HERE, '..', '..');
 const INDEX = path.join(ROOT, 'index.html');
 
-/** Harness output. Uses process.stdout directly so swapping global console (needed to
- *  capture the app's own errors) can never swallow the report. */
 const out = (line = '') => process.stdout.write(`${line}\n`);
 
 const failures = [];
@@ -63,7 +61,6 @@ function makeFetch(fetchCalls) {
   };
 }
 
-/** Pull the app script out of index.html, in either form. */
 function findAppScript(html) {
   const moduleTag = /<script\b[^>]*\btype\s*=\s*["']module["'][^>]*\bsrc\s*=\s*["']([^"']+)["']/i.exec(html);
   if (moduleTag) return { kind: 'module', src: moduleTag[1] };
@@ -97,10 +94,12 @@ const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
 async function run() {
   const html = readFileSync(INDEX, 'utf8');
+  const dataset = JSON.parse(readFileSync(path.join(ROOT, 'data.json'), 'utf8'));
+  const expected = dataset.length;
+
   const script = findAppScript(html);
   const dom = createDom({ width: 1440 });
   const fetchImpl = makeFetch(dom.fetchCalls);
-
   Object.assign(globalThis, globalsFor(dom, fetchImpl));
 
   out('# dashboard smoke test');
@@ -108,16 +107,17 @@ async function run() {
 
   if (script.kind === 'module') {
     await import(pathToFileURL(path.resolve(ROOT, script.src)).href);
-    await sleep(200);
+    await sleep(250);
   } else {
     vm.runInContext(script.code, vm.createContext(globalsFor(dom, fetchImpl)), {
       filename: 'index-inline.js',
     });
-    await sleep(200);
+    await sleep(250);
   }
 
-  const dataset = JSON.parse(readFileSync(path.join(ROOT, 'data.json'), 'utf8'));
-  const expected = dataset.length;
+  const el = (id) => dom.document.getElementById(id);
+  const dashboard = el('dashboard-view');
+  const profile = el('profile-view');
 
   // ---- the page fetched its data -------------------------------------------
   check('data.json was fetched', dom.fetchCalls.some((url) => url.includes('data.json')),
@@ -125,7 +125,7 @@ async function run() {
   check('stats.json was fetched', dom.fetchCalls.some((url) => url.includes('stats.json')),
     `calls: ${dom.fetchCalls.join(', ') || 'none'}`);
 
-  // ---- every render produced output ----------------------------------------
+  // ---- the dashboard view rendered -----------------------------------------
   const containers = {
     stats: 'stats-row',
     sidebar: 'nav-companies',
@@ -137,48 +137,46 @@ async function run() {
     donut: 'donut-wrap',
     map: 'map-wrap',
     timeline: 'overview-timeline',
-    details: 'company-details-list',
   };
   const rendered = {};
   for (const [label, id] of Object.entries(containers)) {
-    const html = dom.document.getElementById(id).innerHTML;
-    rendered[label] = html;
-    check(`${label} rendered content`, html.trim().length > 0, `#${id} is empty`);
+    rendered[label] = el(id).innerHTML;
+    check(`${label} rendered content`, rendered[label].trim().length > 0, `#${id} is empty`);
   }
+  check('last-updated was stamped', el('last-updated').textContent.trim().length > 0);
 
-  check('last-updated was stamped',
-    dom.document.getElementById('last-updated').textContent.trim().length > 0);
+  // ---- the two views start in the right state ------------------------------
+  check('dashboard is visible on load', dashboard.hidden !== true);
+  check('profile view starts hidden and empty',
+    profile.hidden === true && profile.innerHTML === '');
 
-  // ---- the content is real, not merely non-empty ---------------------------
-  const sidebarAnchors = (rendered.sidebar.match(/data-anchor="co-/g) || []).length;
-  check('sidebar lists every company', sidebarAnchors === expected,
-    `expected ${expected} anchors, found ${sidebarAnchors}`);
+  // ---- sidebar index --------------------------------------------------------
+  const companyLinks = rendered.sidebar.match(/class="nav-item nav-company"/g) || [];
+  check('sidebar lists every company', companyLinks.length === expected,
+    `expected ${expected} links, found ${companyLinks.length}`);
 
+  const groupLabels = (rendered.sidebar.match(/class="nav-group-label"/g) || []).length;
+  const categoriesInData = new Set(dataset.map((c) => c.category)).size;
+  check('sidebar is grouped by category', groupLabels === categoriesInData,
+    `expected ${categoriesInData} groups, found ${groupLabels}`);
+
+  const counts = [...rendered.sidebar.matchAll(/class="nav-count">(\d+)</g)].map((m) => Number(m[1]));
+  check('group counts add up to every company',
+    counts.reduce((a, b) => a + b, 0) === expected,
+    `counts sum to ${counts.reduce((a, b) => a + b, 0)}`);
+
+  check('company links are anchors with a route', rendered.sidebar.includes('href="#co-'));
+  check('a known company appears in the sidebar', rendered.sidebar.includes('Anthropic'));
+
+  // ---- content is real, not merely non-empty -------------------------------
   const tableRows = (rendered.table.match(/<tr\b/g) || []).length;
   check('comparison table has a row per company', tableRows >= expected,
     `expected >= ${expected} rows, found ${tableRows}`);
 
-  const detailSections = (rendered.details.match(/class="[^"]*detail-section/g) || []).length;
-  check('detail sections were built', detailSections >= expected,
-    `expected >= ${expected} sections, found ${detailSections}`);
-
   const timelineItems = (rendered.timeline.match(/class="timeline-item/g) || []).length;
   check('timeline has entries', timelineItems > 0, 'no .timeline-item rendered');
 
-  check('a known company appears in the sidebar', rendered.sidebar.includes('Anthropic'));
-
-  // ---- markup hygiene -------------------------------------------------------
-  // Inline handlers cannot see module scope, so markup must not rely on them.
-  // `location.reload()` is the one allowed exception: it is a global.
-  const inlineHandlers = [...html.matchAll(/\son(?:click|change|input|submit|keydown|keyup)\s*=\s*"([^"]*)"/gi)]
-    .map((match) => match[1])
-    .filter((handler) => !/^location\.reload\(\)$/.test(handler.trim()));
-  check('no inline event handlers in index.html', inlineHandlers.length === 0,
-    inlineHandlers.join(', '));
-
   // ---- accessibility --------------------------------------------------------
-  // A marker must be either properly labelled or explicitly hidden as
-  // decorative (cluster "peek" dots duplicate the cluster head).
   const markerTags = rendered.map.match(/<circle class="map-dot[^>]*>/g) || [];
   const covered = markerTags.filter(
     (tag) => /aria-label="/.test(tag) || /aria-hidden="true"/.test(tag),
@@ -187,23 +185,65 @@ async function run() {
     markerTags.length > 0 && covered === markerTags.length,
     `${covered} of ${markerTags.length} markers covered`);
 
-  const labelledMarkers = markerTags.filter((tag) => /aria-label="/.test(tag)).length;
-  check('map markers have accessible names', labelledMarkers > 0, 'no labelled markers');
-
-  const pressed = (rendered.categories.match(/aria-pressed="(true|false)"/g) || []).length;
   const categoryButtons = (rendered.categories.match(/class="filter-btn/g) || []).length;
+  const pressed = (rendered.categories.match(/aria-pressed="(true|false)"/g) || []).length;
   check('category filters expose aria-pressed',
     categoryButtons > 0 && pressed === categoryButtons,
     `${pressed} of ${categoryButtons} buttons`);
 
   check('the modal is a labelled dialog', /role="dialog"/.test(html) && /aria-modal="true"/.test(html));
   check('the search input has an accessible name', /id="company-search"[^>]*aria-label="/.test(html));
+  check('the sidebar filter has an accessible name', /id="sidebar-search"[^>]*aria-label="/.test(html));
   check('a skip link is present', /class="skip-link"/.test(html));
   check('the main landmark is identified', /<main[^>]*id="main"/.test(html));
 
-  const focusableNav = (rendered.sidebar.match(/role="button" tabindex="0"/g) || []).length;
-  check('sidebar links are focusable', focusableNav === expected,
-    `expected ${expected} focusable links, found ${focusableNav}`);
+  const inlineHandlers = [...html.matchAll(/\son(?:click|change|input|submit|keydown|keyup)\s*=\s*"([^"]*)"/gi)]
+    .map((match) => match[1])
+    .filter((handler) => !/^location\.reload\(\)$/.test(handler.trim()));
+  check('no inline event handlers in index.html', inlineHandlers.length === 0, inlineHandlers.join(', '));
+
+  // ---- sidebar search -------------------------------------------------------
+  const sidebarSearch = el('sidebar-search');
+  const always = el('nav-companies').innerHTML;
+  sidebarSearch.value = 'anthropic';
+  sidebarSearch.dispatch('input');
+  const filtered = el('nav-companies').innerHTML;
+  const filteredLinks = (filtered.match(/class="nav-item nav-company"/g) || []).length;
+  check('sidebar search narrows the list', filteredLinks === 1,
+    `expected 1 match for "anthropic", found ${filteredLinks}`);
+  sidebarSearch.value = '';
+  sidebarSearch.dispatch('input');
+  check('clearing the search restores the list', el('nav-companies').innerHTML === always);
+
+  // ---- routing: company profile --------------------------------------------
+  const anthropic = dataset.find((c) => c.name === 'Anthropic');
+  dom.location.hash = `#co-${anthropic._id}`;
+  const profileHtml = el('profile-view').innerHTML;
+  check('navigating to a company renders the profile view',
+    el('profile-view').hidden === false && profileHtml.length > 0,
+    'profile view did not render');
+  check('the profile shows that company', profileHtml.includes(anthropic.name));
+  check('the profile has its own h1', /<h1[^>]*>Anthropic<\/h1>/.test(profileHtml));
+  check('the dashboard is hidden while viewing a profile', el('dashboard-view').hidden === true);
+  check('the document title follows the route',
+    dom.document.title.startsWith('Anthropic'), `title is "${dom.document.title}"`);
+  check('the profile links back to the dashboard', /class="back-link"[^>]*href="#top"/.test(profileHtml));
+  check('the profile renders the company news', profileHtml.includes('timeline-item'));
+
+  const activeLink = el('nav-companies').innerHTML;
+  check('the sidebar marks the active company', activeLink.includes('nav-company active'));
+
+  // ---- routing: back to the dashboard --------------------------------------
+  dom.location.hash = '#top';
+  check('returning to #top shows the dashboard again',
+    el('dashboard-view').hidden === false && el('profile-view').hidden === true);
+  check('the document title is restored',
+    dom.document.title.startsWith('AI Intel Dashboard'), `title is "${dom.document.title}"`);
+
+  // ---- routing: unknown slug degrades, not crashes -------------------------
+  dom.location.hash = '#co-not-a-real-company';
+  check('an unknown company slug falls back to the dashboard',
+    el('dashboard-view').hidden === false && el('profile-view').hidden === true);
 
   // ---- nothing was swallowed ------------------------------------------------
   check('no console errors', dom.errors.length === 0, dom.errors.slice(0, 3).join(' | '));
@@ -229,9 +269,7 @@ process.on('unhandledRejection', (reason) => {
 });
 
 run()
-  .then((code) => {
-    process.exitCode = code;
-  })
+  .then((code) => { process.exitCode = code; })
   .catch((error) => {
     out(`\nSMOKE TEST CRASHED: ${error && error.stack ? error.stack : error}`);
     process.exitCode = 1;

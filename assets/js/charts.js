@@ -5,7 +5,6 @@
  */
 import { state } from './state.js';
 import { escapeAttr, escapeHtml, fmtDate, fmtUSD } from './format.js';
-import { scrollToAnchor } from './ui.js';
 
 export function renderBarChart(containerId, metaId, items, opts = {}) {
     // items: [{ c, value, sub, fillStyle, clickAnchor }]
@@ -35,7 +34,7 @@ export function renderBarChart(containerId, metaId, items, opts = {}) {
     }).join('');
     container.querySelectorAll('.bar-row').forEach(row => {
       row.addEventListener('click', () => {
-        if (row.dataset.anchor) scrollToAnchor(row.dataset.anchor);
+        if (row.dataset.anchor) window.location.hash = '#' + row.dataset.anchor;
       });
     });
   }

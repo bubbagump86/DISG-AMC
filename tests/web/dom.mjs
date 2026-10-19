@@ -309,6 +309,28 @@ export function createDom({ width = 1440 } = {}) {
     };
   };
 
+  // A real event target, because the router listens for hashchange.
+  const windowListeners = new Map();
+  const windowEvents = {
+    addEventListener(type, handler) {
+      if (!windowListeners.has(type)) windowListeners.set(type, []);
+      windowListeners.get(type).push(handler);
+    },
+    removeEventListener(type, handler) {
+      const list = windowListeners.get(type);
+      if (!list) return;
+      const index = list.indexOf(handler);
+      if (index >= 0) list.splice(index, 1);
+    },
+    dispatch(type, event = {}) {
+      for (const handler of windowListeners.get(type) || []) handler(event);
+    },
+    hasListener(type) {
+      return (windowListeners.get(type) || []).length > 0;
+    },
+  };
+
+  let currentHash = '';
   const location = {
     href: 'http://localhost/',
     origin: 'http://localhost',
@@ -316,7 +338,17 @@ export function createDom({ width = 1440 } = {}) {
     host: 'localhost',
     pathname: '/',
     search: '',
-    hash: '',
+    get hash() {
+      return currentHash;
+    },
+    set hash(value) {
+      const next = String(value).startsWith('#') ? String(value) : `#${value}`;
+      if (next === currentHash) return;
+      const previous = currentHash;
+      currentHash = next;
+      this.href = `http://localhost/${next}`;
+      windowEvents.dispatch('hashchange', { oldURL: `http://localhost/${previous}`, newURL: this.href });
+    },
     reload() {},
     assign() {},
     replace() {},
@@ -336,11 +368,16 @@ export function createDom({ width = 1440 } = {}) {
     devicePixelRatio: 1,
     scrollY: 0,
     pageYOffset: 0,
-    addEventListener() {},
-    removeEventListener() {},
-    dispatchEvent() {
-      return false;
+    addEventListener: windowEvents.addEventListener,
+    removeEventListener: windowEvents.removeEventListener,
+    dispatchEvent(event) {
+      windowEvents.dispatch(event && event.type, event);
+      return true;
     },
+    dispatch(type, event) {
+      windowEvents.dispatch(type, event);
+    },
+    hasListener: windowEvents.hasListener,
     requestAnimationFrame(callback) {
       return setTimeout(() => callback(Date.now()), 0);
     },
@@ -383,6 +420,7 @@ export function createDom({ width = 1440 } = {}) {
     logs,
     fetchCalls,
     elements: document._byId,
+    dispatchWindow: windowEvents.dispatch,
     Element,
   };
 }

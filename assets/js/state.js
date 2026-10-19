@@ -18,4 +18,8 @@ export const state = {
   sortAsc: false,
   /** Active category filter, or 'All'. */
   categoryFilter: 'All',
+  /** Sidebar company filter text. */
+  sidebarSearch: '',
+  /** Slug of the company whose profile is open, or null on the dashboard. */
+  activeCompany: null,
 };

@@ -5,7 +5,6 @@
  */
 import { state } from './state.js';
 import { escapeHtml, fmtUSD } from './format.js';
-import { scrollToAnchor } from './ui.js';
 
 export function renderCategoryButtons() {
     const cats = uniqueCategories();
@@ -26,8 +25,6 @@ export function renderCategoryButtons() {
 export function applyFilters() {
     const q = (state.search || '').toLowerCase();
     const rows = document.querySelectorAll('#cmp-table tbody tr');
-    const details = document.querySelectorAll('#company-details-list .detail-card');
-    const navItems = document.querySelectorAll('#nav-companies .nav-item');
     let visibleCount = 0;
     const totalRows = rows.length;
 
@@ -39,22 +36,6 @@ export function applyFilters() {
       const show = catOk && searchOk;
       r.style.display = show ? '' : 'none';
       if (show) visibleCount++;
-    });
-    details.forEach((d) => {
-      const id = d.id;
-      const c = state.companies.find(x => 'co-' + (x._id || x.name.toLowerCase().replace(/[^a-z0-9]+/g, '-')) === id);
-      if (!c) return;
-      const catOk = state.categoryFilter === 'All' || c.category === state.categoryFilter;
-      const text = (c.name + ' ' + c.category + ' ' + c.hq).toLowerCase();
-      const searchOk = !q || text.includes(q);
-      d.style.display = (catOk && searchOk) ? '' : 'none';
-    });
-    navItems.forEach(n => {
-      const c = state.companies.find(x => 'co-' + (x._id || x.name.toLowerCase().replace(/[^a-z0-9]+/g, '-')) === n.dataset.anchor);
-      if (!c) return;
-      const catOk = state.categoryFilter === 'All' || c.category === state.categoryFilter;
-      const searchOk = !q || c.name.toLowerCase().includes(q);
-      n.style.display = (catOk && searchOk) ? '' : 'none';
     });
 
     // Update meta + clear button
@@ -150,7 +131,7 @@ export function renderTable() {
       tr.addEventListener('click', e => {
         // Don't trigger row click when clicking the website link
         if (e.target.tagName === 'A') return;
-        scrollToAnchor(tr.dataset.anchor);
+        window.location.hash = '#' + tr.dataset.anchor;
       });
     });
   }
